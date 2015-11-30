@@ -9,8 +9,8 @@ setMethod(f = "computeGenesPerCell",
           signature = "SingleSpeciesSample",
           function(object) {
             genes <- data.frame("cells" = names(colSums(object@dge@dge != 0)),
-                                "counts" = as.numeric(colSums(object@dge@dge != 0)))
-            genes <- cbind(genes, "species" = object@species1)
+                                "counts" = as.numeric(colSums(object@dge@dge != 0)),
+                                "species" = object@species1)
             return (genes)
           })
 
@@ -20,9 +20,21 @@ setMethod(f = "computeTranscriptsPerCell",
           signature = "SingleSpeciesSample",
           function(object) {
             transcripts <- data.frame("cells" = names(colSums(object@dge@dge)),
-                                      "counts" = as.numeric(colSums(object@dge@dge)))
-            transcripts <- cbind(transcripts, "species" = object@species1)
+                                      "counts" = as.numeric(colSums(object@dge@dge)),
+                                      "species" = object@species1)
             return (transcripts)
+          })
+
+setMethod(f = "removeLowQualityGenes",
+          signature = "SingleSpeciesSample",
+          function(object) {
+            return (new("SingleSpeciesSample", species1=object@species1, dge=removeLowQualityGenes(object@dge)))
+          })
+
+setMethod(f = "removeLowQualityCells",
+          signature = "SingleSpeciesSample",
+          function(object) {
+            return (new("SingleSpeciesSample", species1=object@species1, dge=removeLowQualityCells(object@dge)))
           })
 
 #

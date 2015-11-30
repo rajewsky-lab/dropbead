@@ -18,6 +18,7 @@ sum(o3c$V1[1:597])/sum(o3c$V1)
 
 setwd("/data/BIO3/home/nkarais/Work/@@/dropseq_cell/data/")
 
+dm <- data.frame(fread("zcat < macosko/hek_3t3_12_5/SRR1873277/dge.txt.gz"), row.names = 1)
 d1 <- data.frame(fread("zcat < hek3t3Pilot001/hek3t3_pilot/NR_JS0001/sample1/dge.txt.gz"), row.names = 1)
 d2 <- data.frame(fread("zcat < hek3t3Pilot002/hek3t3_pilot/NR_JS0001/hek3t3pilot2/dge.txt.gz"), row.names = 1)
 da <- data.frame(fread("zcat < hek3t3Pilot003/hek3t3Pilot003/NR_JS0003a/sample/dge.txt.gz"), row.names = 1)
@@ -26,21 +27,20 @@ dc <- data.frame(fread("zcat < hek3t3Pilot003/hek3t3Pilot003/NR_JS0003c/sample/d
 
 library(dropseq)
 
+dgematrixm <- new("DigitalGeneExpressionMatrix", dge = dm)
 dgematrix1 <- new("DigitalGeneExpressionMatrix", dge = d1)
 dgematrix2 <- new("DigitalGeneExpressionMatrix", dge = d2)
 dgematrixa <- new("DigitalGeneExpressionMatrix", dge = da)
 dgematrixb <- new("DigitalGeneExpressionMatrix", dge = db)
 dgematrixc <- new("DigitalGeneExpressionMatrix", dge = dc)
 
+mspm <- new("MixedSpeciesSample", species1 = "human", species2 = "mouse", dge = dgematrixm)
 msp1 <- new("MixedSpeciesSample", species1 = "human", species2 = "mouse", dge = dgematrix1)
 msp2 <- new("MixedSpeciesSample", species1 = "human", species2 = "mouse", dge = dgematrix2)
 mspa <- new("MixedSpeciesSample", species1 = "human", species2 = "mouse", dge = dgematrixa)
 mspb <- new("MixedSpeciesSample", species1 = "human", species2 = "mouse", dge = dgematrixb)
 mspc <- new("MixedSpeciesSample", species1 = "human", species2 = "mouse", dge = dgematrixc)
 
-mspa <- collapseCellsByBarcode(mspa, 0.9)
-mspb <- collapseCellsByBarcode(mspb, 0.9)
-mspc <- collapseCellsByBarcode(mspc, 0.9)
 
 plotCellTypes(classifyCellsAndDoublets(msp1, 0.9))
 plotViolinGenes(computeGenesPerCell(mspa, 0.9))
@@ -60,15 +60,15 @@ plotCellTypes(classifyCellsAndDoublets(msp1, 0.9))
 t1 <- computeGenesPerCell(msp1, 0.9)
 t2 <- computeTranscriptsPerCell(msp1, 0.9)
 
-computeGenesPerCell(msp1, 0.9) == t1
-computeTranscriptsPerCell(msp1, 0.9) == t2
+plotViolinGenes(computeGenesPerCell(msp1, 0.9))
+
+s.t <- splitMixedSpeciesSampleToSingleSpecies(msp1, 0.9)[[2]]
 
 
-m <- lapply(splitDgeByGenesAndCellsOfSpecies(msp1, 0.9),
-       function(x) new("DigitalGeneExpressionMatrix", dge = x))
+quantile(rowSums(s.t@dge@dge), 0.9)
 
-class(m[[1]])
 
+subset(s.t@dge@dge, rowSums(s.t@dge@dge) >= 247)
 
 
 

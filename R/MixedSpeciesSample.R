@@ -10,7 +10,6 @@ setMethod(f = "splitDgeByGenesOfSpecies",
           function(object) {
             object.species2 <- object@dge[grep("[a-z]", rownames(object@dge)), ]
             object.species1 <- object@dge[setdiff(1:(dim(object@dge)[1]), grep("[a-z]", rownames(object@dge))), ]
-
             return (list(object.species1, object.species2))
           })
 
