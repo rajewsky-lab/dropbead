@@ -3,6 +3,10 @@ SingleSpeciesSample <- setClass(Class = "SingleSpeciesSample",
                                           dge = "DigitalGeneExpressionMatrix")
                                 )
 
+#' Compute genes per cell
+#'
+#' @param object A Single or Mixed species sample.
+#' @return A \code{data.frame} with cells, gene counts and species.
 setGeneric(name = "computeGenesPerCell",
            def = function(object, ...) {standardGeneric("computeGenesPerCell")})
 setMethod(f = "computeGenesPerCell",

@@ -26,7 +26,7 @@ setMethod(f = "classifyCellsAndDoublets",
                              "s2" = as.vector(colSums(object.species2)),
                              "species" = "", stringsAsFactors = F)
             for (i in 1:dim(df)[1]) {
-               if (df$s1[i] < quantile(df$s1, 0.1) & df$s2[i] < quantile(df$s2, 0.1)) {
+               if (df$s1[i] < quantile(df$s1, 0.25) & df$s2[i] < quantile(df$s2, 0.25)) {
                  df$species[i] = "undefined"
                  next
                }

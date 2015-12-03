@@ -22,6 +22,18 @@ setMethod(f = "removeLowQualityCells",
                         dge = object@dge[, names(object@dge)[colSums(object@dge != 0) > 2000]]))
           })
 
+#' Compute the average expression of each gene over all cells
+#'
+#' @param object A \code{DigitalGeneExpressionMatrix} object.
+#' @return A vector of mean expression values for each gene.
+setGeneric(name = "meanGeneExpression",
+           def = function (object) {standardGeneric("meanGeneExpression")})
+setMethod(f = "meanGeneExpression",
+          signature = "DigitalGeneExpressionMatrix",
+          function(object) {
+            return ()
+          })
+
 setGeneric(name = "computeGenesVariability",
            def = function(object, ...) {standardGeneric("computeGenesVariability")})
 setMethod(f = "computeGenesVariability",

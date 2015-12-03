@@ -19,6 +19,8 @@ sum(o3c$V1[1:597])/sum(o3c$V1)
 setwd("/data/BIO3/home/nkarais/Work/@@/dropseq_cell/data/")
 
 dm <- data.frame(fread("zcat < macosko/hek_3t3_12_5/SRR1873277/dge.txt.gz"), row.names = 1)
+dmT <- data.frame(fread("zcat < macosko/SpeciesMix_ThousandSTAMPs_50cellspermicroliter/SRR1748411/dge.txt.gz"), row.names = 1)
+dmH <- data.frame(fread("zcat < macosko/SpeciesMix_HundredSTAMPs_50cellpermicroliter/SRR1748412/dge.txt.gz"), row.names = 1)
 d1 <- data.frame(fread("zcat < hek3t3Pilot001/hek3t3_pilot/NR_JS0001/sample1/dge.txt.gz"), row.names = 1)
 d2 <- data.frame(fread("zcat < hek3t3Pilot002/hek3t3_pilot/NR_JS0001/hek3t3pilot2/dge.txt.gz"), row.names = 1)
 da <- data.frame(fread("zcat < hek3t3Pilot003/hek3t3Pilot003/NR_JS0003a/sample/dge.txt.gz"), row.names = 1)
@@ -27,19 +29,23 @@ dc <- data.frame(fread("zcat < hek3t3Pilot003/hek3t3Pilot003/NR_JS0003c/sample/d
 
 library(dropseq)
 
-dgematrixm <- new("DigitalGeneExpressionMatrix", dge = dm)
+dgematrixmT <- new("DigitalGeneExpressionMatrix", dge = dmT)
 dgematrix1 <- new("DigitalGeneExpressionMatrix", dge = d1)
 dgematrix2 <- new("DigitalGeneExpressionMatrix", dge = d2)
 dgematrixa <- new("DigitalGeneExpressionMatrix", dge = da)
 dgematrixb <- new("DigitalGeneExpressionMatrix", dge = db)
 dgematrixc <- new("DigitalGeneExpressionMatrix", dge = dc)
 
-mspm <- new("MixedSpeciesSample", species1 = "human", species2 = "mouse", dge = dgematrixm)
+mspm <- new("MixedSpeciesSample", species1 = "human", species2 = "mouse", dge = new("DigitalGeneExpressionMatrix", dge = dm))
+mspmT <- new("MixedSpeciesSample", species1 = "human", species2 = "mouse", dge = dgematrixmT)
+mspmH <- new("MixedSpeciesSample", species1 = "human", species2 = "mouse",
+             dge = new("DigitalGeneExpressionMatrix", dge = dmH))
 msp1 <- new("MixedSpeciesSample", species1 = "human", species2 = "mouse", dge = dgematrix1)
 msp2 <- new("MixedSpeciesSample", species1 = "human", species2 = "mouse", dge = dgematrix2)
 mspa <- new("MixedSpeciesSample", species1 = "human", species2 = "mouse", dge = dgematrixa)
 mspb <- new("MixedSpeciesSample", species1 = "human", species2 = "mouse", dge = dgematrixb)
-mspc <- new("MixedSpeciesSample", species1 = "human", species2 = "mouse", dge = dgematrixc)
+mspc <- new("MixedSpeciesSample", species1 = "human", species2 = "mouse", dge = dgematrixc)2/83*100
+
 
 
 plotCellTypes(classifyCellsAndDoublets(msp1, 0.9))
@@ -53,24 +59,30 @@ compareGeneExpressionLevels(mspa, 0.9, mspb, 0.9)
 plotCellTypes(classifyCellsAndDoublets(mspc, 0.9))
 plotViolinGenes(computeGenesPerCell(mspc, 0.9))
 compareGeneExpressionLevels(mspb, 0.9, mspc, 0.9)
-
+?computeGenesPerCell
 #### Testing
+sh <- splitMixedSpeciesSampleToSingleSpecies(mspm, 0.9)[[1]]
+sh.f <- removeLowQualityCells(removeLowQualityGenes(sh))
+dim(sh@dge@dge)
+dim(sh.f@dge@dge)
 
-plotCellTypes(classifyCellsAndDoublets(msp1, 0.9))
-t1 <- computeGenesPerCell(msp1, 0.9)
-t2 <- computeTranscriptsPerCell(msp1, 0.9)
+plotViolinGenes(computeGenesPerCell(sh))
+plotViolinGenes(computeGenesPerCell(sh.f))
 
-plotViolinGenes(computeGenesPerCell(msp1, 0.9))
+hist(apply(log(sh.f@dge@dge+1, 2), 1, var), breaks = 150, col = 'red')
+hist(apply(log(sh.f@dge@dge+1, 2), 1, mean), breaks = 150, col = 'red')
 
-s.t <- splitMixedSpeciesSampleToSingleSpecies(msp1, 0.9)[[2]]
+hist(apply(log(sh.f@dge@dge+1, 2), 1, var)/apply(log(sh.f@dge@dge+1, 2), 1, mean),
+     breaks = 150, col = 'red')
 
+summary(apply(log(sh.f@dge@dge+1, 2), 1, var)/apply(log(sh.f@dge@dge+1, 2), 1, mean))
 
-quantile(rowSums(s.t@dge@dge), 0.9)
+hist(as.numeric(log(sh.f@dge@dge['SNX18', ]+1)), breaks = 100, col = 'red')
 
+var(as.numeric(log(sh.f@dge@dge['GAPDH', ]+1)))
+summary(as.numeric(log(sh.f@dge@dge['GAPDH', ]+1)))
 
-subset(s.t@dge@dge, rowSums(s.t@dge@dge) >= 247)
-
-
+apply(log(sh.f@dge@dge+1), 1, mean)
 
 
 
