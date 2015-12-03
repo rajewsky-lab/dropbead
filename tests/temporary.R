@@ -75,14 +75,17 @@ hist(apply(log(sh.f@dge@dge+1, 2), 1, mean), breaks = 150, col = 'red')
 hist(apply(log(sh.f@dge@dge+1, 2), 1, var)/apply(log(sh.f@dge@dge+1, 2), 1, mean),
      breaks = 150, col = 'red')
 
-summary(apply(log(sh.f@dge@dge+1, 2), 1, var)/apply(log(sh.f@dge@dge+1, 2), 1, mean))
 
-hist(as.numeric(log(sh.f@dge@dge['SNX18', ]+1)), breaks = 100, col = 'red')
 
-var(as.numeric(log(sh.f@dge@dge['GAPDH', ]+1)))
-summary(as.numeric(log(sh.f@dge@dge['GAPDH', ]+1)))
+me <- geneExpressionMean(sh.f)
+gv <- geneExpressionVariability(sh.f, bins=21, low=T)
+gv
+length(gv)
+intersect(names(tail(sort(me), 122)), gv)
 
-apply(log(sh.f@dge@dge+1), 1, mean)
+sh.f@dge@dge[intersect(names(tail(sort(me), 122)), gv), ]
+
+
 
 
 

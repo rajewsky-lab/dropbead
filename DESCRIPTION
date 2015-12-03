@@ -1,12 +1,12 @@
 Package: dropseq
 Type: Package
 Title: What the Package Does (Title Case)
-Version: 0.1
+Version: 0.15
 Date: 2015-11-14
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
+Author: Nikolaos Karaiskos
+Maintainer: Nikolaos Karaiskos <nikolaos.karaiskos@mdc-berlin.de>
 Depends: ggplot2, grid, RColorBrewer, gridExtra, gplots, plyr
-Description: More about what it does (maybe more than one line)
+Description: Tailored for the purposes of analysing Dropseq data.
 License: What license is it under?
 Collate: Tools.R DGEMatrix.R SingleSpeciesSample.R MixedSpeciesSample.R
 LazyData: TRUE

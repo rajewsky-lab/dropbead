@@ -7,7 +7,7 @@
 computeGenesPerCell(object, ...)
 }
 \arguments{
-\item{object}{A Single or Mixed species sample.}
+\item{object}{A Single species sample.}
 }
 \value{
 A \code{data.frame} with cells, gene counts and species.

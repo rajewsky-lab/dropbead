@@ -5,7 +5,7 @@ SingleSpeciesSample <- setClass(Class = "SingleSpeciesSample",
 
 #' Compute genes per cell
 #'
-#' @param object A Single or Mixed species sample.
+#' @param object A Single species sample.
 #' @return A \code{data.frame} with cells, gene counts and species.
 setGeneric(name = "computeGenesPerCell",
            def = function(object, ...) {standardGeneric("computeGenesPerCell")})
@@ -18,6 +18,10 @@ setMethod(f = "computeGenesPerCell",
             return (genes)
           })
 
+#' Compute transcripts per cell
+#'
+#' @param object A Single species sample.
+#' @return A \code{data.frame} with cells, transcript counts and species.
 setGeneric(name = "computeTranscriptsPerCell",
            def = function(object, ...) {standardGeneric("computeTranscriptsPerCell")})
 setMethod(f = "computeTranscriptsPerCell",
@@ -39,6 +43,24 @@ setMethod(f = "removeLowQualityCells",
           signature = "SingleSpeciesSample",
           function(object) {
             return (new("SingleSpeciesSample", species1=object@species1, dge=removeLowQualityCells(object@dge)))
+          })
+
+setMethod(f = "geneExpressionMean",
+          signature = "SingleSpeciesSample",
+          function(object) {
+            return (geneExpressionMean(object@dge))
+          })
+
+setMethod(f = "geneExpressionDispersion",
+          signature = "SingleSpeciesSample",
+          function(object) {
+            return (geneExpressionDispersion(object@dge))
+          })
+
+setMethod(f = "geneExpressionVariability",
+          signature = "SingleSpeciesSample",
+          function(object, bins, low) {
+            return (geneExpressionVariability(object@dge, bins, low))
           })
 
 #
