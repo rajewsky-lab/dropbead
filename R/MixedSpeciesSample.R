@@ -69,7 +69,7 @@ setMethod(f = "classifyCellsAndDoublets",
 #' over the other has to surpass in order to succesfully assign a cell to a species.
 #' @return A list \code{data.frames} representing the DGEs for each species.
 setGeneric(name = "splitDgeByGenesAndCellsOfSpecies",
-           def = function(object, threshold = 0.9) {standardGeneric("splitDgeByGenesAndCellsOfSpecies")})
+           def = function(object, threshold=0.9) {standardGeneric("splitDgeByGenesAndCellsOfSpecies")})
 setMethod(f = "splitDgeByGenesAndCellsOfSpecies",
           signature = "MixedSpeciesSample",
           function(object, threshold) {
@@ -91,7 +91,7 @@ setMethod(f = "splitDgeByGenesAndCellsOfSpecies",
 #' over the other has to surpass in order to succesfully assign a cell to a species.
 #' @return A list of two \code{SingleSpeciesSample} objects.
 setGeneric(name = "splitMixedSpeciesSampleToSingleSpecies",
-           def = function(object, threshold = 0.9) {standardGeneric("splitMixedSpeciesSampleToSingleSpecies")})
+           def = function(object, threshold=0.9) {standardGeneric("splitMixedSpeciesSampleToSingleSpecies")})
 setMethod(f = "splitMixedSpeciesSampleToSingleSpecies",
           signature = "MixedSpeciesSample",
           function(object, threshold) {
@@ -116,7 +116,7 @@ setMethod(f = "computeGenesPerCell",
 
 setMethod(f = "computeTranscriptsPerCell",
           signature = "MixedSpeciesSample",
-          function(object, threshold = 0.9) {
+          function(object, threshold=0.9) {
             return (rbind.fill(lapply(splitMixedSpeciesSampleToSingleSpecies(object, threshold), computeTranscriptsPerCell)))
           })
 
@@ -128,13 +128,13 @@ setMethod(f = "computeTranscriptsPerCell",
 #' @param A \code{MixedSpeciesSample} object.
 setMethod(f = "listCellsToCollapse",
           signature = "MixedSpeciesSample",
-          function (object, threshold = 0.9) {
+          function (object, threshold=0.9) {
             return(unlist(lapply(splitMixedSpeciesSampleToSingleSpecies(mo, 0.9), listCellsToCollapse), recursive = F))
           })
 
 setMethod(f = "collapseCellsByBarcode",
           signature = "MixedSpeciesSample",
-          function(object, threshold = 0.9) {
+          function(object, threshold=0.9) {
             listOfCells <- listCellsToCollapse(object, threshold)
 
             for (index in 1:length(listOfCells)) {

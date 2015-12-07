@@ -5,6 +5,16 @@ SingleSpeciesSample <- setClass(Class = "SingleSpeciesSample",
                                           dge = "data.frame")
 )
 
+setMethod("initialize",
+          "SingleSpeciesSample",
+          function (.Object, species1 = "", cells = c(), genes = c(), dge = data.frame()) {
+            .Object@species1 = species1
+            .Object@cells = names(dge)
+            .Object@genes = rownames(dge)
+            .Object@dge = dge
+            .Object
+          })
+
 #' Compute genes per cell
 #'
 #' @param object A Single species sample.

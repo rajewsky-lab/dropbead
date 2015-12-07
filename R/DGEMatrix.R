@@ -2,28 +2,30 @@
 
 #' Filter out low quality genes
 #'
-#' Remove genes which are expressed in less than three cells.
+#' Remove genes which are expressed in less than a minimum number of cells.
 #' @param object A \code{data.frame} representing DGE.
+#' @param n The minimum number of cells.
 #' @return A \code{data.frame} without the low quality genes.
 setGeneric(name = "removeLowQualityGenes",
-           def = function(object) {standardGeneric("removeLowQualityGenes")})
+           def = function(object, n=3) {standardGeneric("removeLowQualityGenes")})
 setMethod(f = "removeLowQualityGenes",
           signature = "data.frame",
-          function(object) {
-            return (object[rownames(object) %in% rownames(object)[rowSums(object != 0) > 3], ])
+          function(object, n) {
+            return (object[rownames(object) %in% rownames(object)[rowSums(object != 0) > n], ])
           })
 
 #' Filter out low quality cells
 #'
-#' Remove cells which express less than 2000 genes.
+#' Remove cells expressing less than a minimum of genes (default value is 2000).
 #' @param object A \code{data.frame} representing DGE.
+#' @param n The minimum number of genes required.
 #' @return A \code{data.frame} without the low quality cells.
 setGeneric(name = "removeLowQualityCells",
-           def = function(object, ...) {standardGeneric("removeLowQualityCells")})
+           def = function(object, n=2000, ...) {standardGeneric("removeLowQualityCells")})
 setMethod(f = "removeLowQualityCells",
           signature = "data.frame",
-          function(object) {
-            return (object[, names(object)[colSums(object != 0) > 2000]])
+          function(object, n) {
+            return (object[, names(object)[colSums(object != 0) >= n]])
           })
 
 #' Compute the average expression of each gene across all cells.
