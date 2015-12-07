@@ -97,7 +97,7 @@ setMethod(f = "geneExpressionVariability",
 
 #' Identify doublets
 #'
-#' Subsets the DGE matrix to genes which are highly expressed but at the
+#' Subsets the DGE matrix to genes which are highly expressed and at the
 #' same time lowly varied across all cells. Comparing the cells then probabilities
 #' are assigned for each cell to be a doublet of the same species.
 #' @param object A \code{DigitalGeneExpressionMatrix} object.
@@ -111,7 +111,7 @@ setMethod(f = "identifyDoublets",
             c.genes <- intersect(names(tail(sort(geneExpressionMean(object)), length(lv.genes))), lv.genes)
             dge.red <- object@dge[c.genes, ]
 
-            return (0)
+            return (dge.red)
           })
 
 

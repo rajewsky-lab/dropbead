@@ -13,7 +13,7 @@ identifyDoublets(object)
 A \code{vector} containing the assigned probabilities for each cell.
 }
 \description{
-Subsets the DGE matrix to genes which are highly expressed but at the
+Subsets the DGE matrix to genes which are highly expressed and at the
 same time lowly varied across all cells. Comparing the cells then probabilities
 are assigned for each cell to be a doublet of the same species.
 }

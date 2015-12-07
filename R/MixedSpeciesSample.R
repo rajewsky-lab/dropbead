@@ -13,8 +13,21 @@ setMethod(f = "splitDgeByGenesOfSpecies",
             return (list(object.species1, object.species2))
           })
 
+#' Classify cells to species
+#'
+#'
+#' Classify the cells to species according to the transcripts they express.
+#' The differentiation of species is performed internally and according to
+#' the \code{species1} and \code{species2} labels of the sample. If the
+#' classificiation is not confident enough, the cell is characterized as doublet.
+#' @param object A \code{MixedSpeciesSample} object.
+#' @param threshold The threshold which the ratio of transcripts of one species
+#' over the other has to surpass in order to succesfully assign a cell to a species.
+#' Below that threshold the cell is characterized as a doublet.
+#' @return A \code{data.frame} containing the cell barcodes, the number of transcripts
+#' per species and the characterization of the cell.
 setGeneric(name = "classifyCellsAndDoublets",
-           def = function(object, threshold) {standardGeneric("classifyCellsAndDoublets")})
+           def = function(object, threshold=0.9) {standardGeneric("classifyCellsAndDoublets")})
 setMethod(f = "classifyCellsAndDoublets",
           signature = "MixedSpeciesSample",
           function(object, threshold) {
