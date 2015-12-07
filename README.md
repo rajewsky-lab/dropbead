@@ -3,12 +3,10 @@ This package contains classes and functions to analyze single cell
 sequencing data, like those generated through the Dropseq protocol.
 The package is in essence tailored for the needs of Dropseq.
 
-There are three main classes: 
+There are two main classes for the time being: 
 
-* the `DigitalGeneExpressionMatrix` class is basically the DGE
-and contains operations on DGE
-* the `SingleSpeciesSample` contains objects with a `species1`
-attribute and a `DigitalGeneExpressionMatrix`
+* the `SingleSpeciesSample` contains objects with a `species1`,
+`cells`, `genes` attributes and a `data.frame` representing DGE.
 * the `MixedSpeciesSample` extends the `SingleSpeciesSample`
 class and contains an additional `species2` attribute.
 
