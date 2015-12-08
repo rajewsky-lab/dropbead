@@ -3,6 +3,17 @@ MixedSpeciesSample <- setClass(Class = "MixedSpeciesSample",
                          contains = "SingleSpeciesSample"
                          )
 
+setMethod("initialize",
+          "MixedSpeciesSample",
+          function (.Object, species1="", species2="", cells=c(), genes=c(), dge=data.frame()) {
+            .Object@species1 = species1
+            .Object@species2 = species2
+            .Object@cells = names(dge)
+            .Object@genes = rownames(dge)
+            .Object@dge = dge
+            .Object
+          })
+
 #' Split DGE by genes of species
 #'
 #' @param object A \code{MixedSpeciesSample} object.
@@ -129,7 +140,7 @@ setMethod(f = "computeTranscriptsPerCell",
 setMethod(f = "listCellsToCollapse",
           signature = "MixedSpeciesSample",
           function (object, threshold=0.9) {
-            return(unlist(lapply(splitMixedSpeciesSampleToSingleSpecies(mo, 0.9), listCellsToCollapse), recursive = F))
+            return(unlist(lapply(splitMixedSpeciesSampleToSingleSpecies(object, 0.9), listCellsToCollapse), recursive = F))
           })
 
 setMethod(f = "collapseCellsByBarcode",
@@ -144,6 +155,7 @@ setMethod(f = "collapseCellsByBarcode",
 
             names(object@dge)[(length(names(object@dge)) -
                                      length(listOfCells) + 1):length(names(object@dge))] <- unlist(listOfCells)[seq(1, length(unlist(listOfCells)), 2)]
+            object@cells <- names(object@dge)
             return (object)
           })
 

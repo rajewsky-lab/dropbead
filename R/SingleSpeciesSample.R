@@ -121,6 +121,7 @@ setMethod(f = "collapseCellsByBarcode",
 
             names(object@dge)[(length(names(object@dge)) -
                                      length(listOfCells) + 1):length(names(object@dge))] <- unlist(listOfCells)[seq(1, length(unlist(listOfCells)), 2)]
+            object@cells <- names(object@dge)
             return (object)
           })
 
