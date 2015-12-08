@@ -7,7 +7,7 @@
 geneExpressionVariability(object, bins = 20, low = FALSE)
 }
 \arguments{
-\item{object}{A \code{DigitalGeneExpressionMatrix} object.}
+\item{object}{A \code{data.frame} representing DGE.}
 
 \item{bins}{The number of bins.}
 

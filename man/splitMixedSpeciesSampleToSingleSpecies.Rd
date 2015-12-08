@@ -4,7 +4,7 @@
 \alias{splitMixedSpeciesSampleToSingleSpecies}
 \title{Separate the mixed species sample into two single species samples}
 \usage{
-splitMixedSpeciesSampleToSingleSpecies(object, threshold)
+splitMixedSpeciesSampleToSingleSpecies(object, threshold = 0.9)
 }
 \arguments{
 \item{object}{A \code{MixedSpeciesSample} object.}

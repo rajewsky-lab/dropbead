@@ -86,6 +86,7 @@ setMethod(f = "geneExpressionVariability",
               hv.genes <- c(hv.genes, names(scale(bin.disp)[scale(bin.disp) > 2, ]))
               lv.genes <- c(lv.genes, names(scale(bin.disp)[scale(bin.disp) < -1.6, ]))
             }
+
             if (low == F) {return (hv.genes)}
             if (low == T) {return (lv.genes)}
           })

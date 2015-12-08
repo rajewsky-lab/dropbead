@@ -7,7 +7,7 @@
 identifyDoublets(object)
 }
 \arguments{
-\item{object}{A \code{DigitalGeneExpressionMatrix} object.}
+\item{object}{A \code{data.frame} representing DGE.0}
 }
 \value{
 A \code{vector} containing the assigned probabilities for each cell.

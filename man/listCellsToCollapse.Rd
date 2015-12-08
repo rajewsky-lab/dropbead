@@ -7,7 +7,10 @@
 listCellsToCollapse(object, ...)
 }
 \arguments{
-\item{A}{\code{MixedSpeciesSample} object.}
+\item{A}{\code{SingleSpeciesSample} object.}
+}
+\value{
+A list of pairs od candidate cells marked for collapsing.
 }
 \description{
 Identify and list cells which share 11 bases in their barcodes and only the last

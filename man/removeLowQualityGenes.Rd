@@ -4,16 +4,17 @@
 \alias{removeLowQualityGenes}
 \title{Filter out low quality genes}
 \usage{
-removeLowQualityGenes(object)
+removeLowQualityGenes(object, n = 3)
 }
 \arguments{
-\item{object}{A \code{DigitalGeneExpressionMatrix} object.}
+\item{object}{A \code{data.frame} representing DGE.}
+
+\item{n}{The minimum number of cells.}
 }
 \value{
-A \code{DigitalGeneExpressionMatrix} object without the
-low quality genes.
+A \code{data.frame} without the low quality genes.
 }
 \description{
-Remove genes which are expressed in less than three cells.
+Remove genes which are expressed in less than a minimum number of cells.
 }
 

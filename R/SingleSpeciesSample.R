@@ -2,8 +2,7 @@ SingleSpeciesSample <- setClass(Class = "SingleSpeciesSample",
                                 slots = c(species1 = "character",
                                           cells = "vector",
                                           genes = "vector",
-                                          dge = "data.frame")
-)
+                                          dge = "data.frame"))
 
 setMethod("initialize",
           "SingleSpeciesSample",
@@ -39,7 +38,7 @@ setGeneric(name = "computeTranscriptsPerCell",
 setMethod(f = "computeTranscriptsPerCell",
           signature = "SingleSpeciesSample",
           function(object) {
-            transcripts <- data.frame("cells" = names(colSums(object@dge)),
+            transcripts <- data.frame("cells" = object@cells,
                                       "counts" = as.numeric(colSums(object@dge)),
                                       "species" = object@species1)
             return (transcripts)
@@ -90,7 +89,7 @@ setMethod(f = "listCellsToCollapse",
           signature = "SingleSpeciesSample",
           function (object) {
             theListOfCellPairs <- list()
-            cells <- sort(names(object@dge))
+            cells <- sort(object@cells)
             for (cell in 1:(length(cells)-1)) {
               if (substr(cells[cell], 1, 11) == substr(cells[cell+1], 1, 11)) {
                 if (substr(cells[cell], nchar(cells[cell]), nchar(cells[cell])) == "N" |

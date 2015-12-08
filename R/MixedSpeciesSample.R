@@ -21,10 +21,16 @@ setMethod("initialize",
 setGeneric(name = "splitDgeByGenesOfSpecies",
            def = function(object) {standardGeneric("splitDgeByGenesOfSpecies")})
 setMethod(f = "splitDgeByGenesOfSpecies",
-          signature = "data.frame",
+          signature = "MixedSpeciesSample",
           function(object) {
-            object.species2 <- object[grep("[a-z]", rownames(object)), ]
-            object.species1 <- object[setdiff(1:(dim(object)[1]), grep("[a-z]", rownames(object))), ]
+            if (object@species1 == "human" & object@species2 == "mouse") {
+              object.species2 <- object@dge[grep("[a-z]", object@genes), ]
+              object.species1 <- object@dge[setdiff(1:(length(object@genes)), grep("[a-z]", object@genes)), ]
+            }
+            if (object@species1 == "melanogaster" & object@species2 == "virilis") {
+              object.species1 <- object@dge[grep("Dvir", object@genes), ]
+              object.species2 <- object@dge[setdiff(1:(length(object@genes)), grep("Dvir", object@genes)), ]
+            }
             return (list(object.species1, object.species2))
           })
 
@@ -46,8 +52,8 @@ setGeneric(name = "classifyCellsAndDoublets",
 setMethod(f = "classifyCellsAndDoublets",
           signature = "MixedSpeciesSample",
           function(object, threshold) {
-            object.species1 <- splitDgeByGenesOfSpecies(object@dge)[[1]]
-            object.species2 <- splitDgeByGenesOfSpecies(object@dge)[[2]]
+            object.species1 <- splitDgeByGenesOfSpecies(object)[[1]]
+            object.species2 <- splitDgeByGenesOfSpecies(object)[[2]]
 
             df <- data.frame("cell" = names(object@dge),
                              "s1" = as.vector(colSums(object.species1)),
@@ -84,8 +90,8 @@ setGeneric(name = "splitDgeByGenesAndCellsOfSpecies",
 setMethod(f = "splitDgeByGenesAndCellsOfSpecies",
           signature = "MixedSpeciesSample",
           function(object, threshold) {
-            object.species1 <- splitDgeByGenesOfSpecies(object@dge)[[1]]
-            object.species2 <- splitDgeByGenesOfSpecies(object@dge)[[2]]
+            object.species1 <- splitDgeByGenesOfSpecies(object)[[1]]
+            object.species2 <- splitDgeByGenesOfSpecies(object)[[2]]
 
             df <- classifyCellsAndDoublets(object, threshold)
 
@@ -121,7 +127,7 @@ setMethod(f = "splitMixedSpeciesSampleToSingleSpecies",
 
 setMethod(f = "computeGenesPerCell",
           signature = "MixedSpeciesSample",
-          function(object, threshold = 0.9) {
+          function(object, threshold=0.9) {
             return(rbind.fill(lapply(splitMixedSpeciesSampleToSingleSpecies(object, threshold), computeGenesPerCell)))
           })
 
@@ -140,7 +146,7 @@ setMethod(f = "computeTranscriptsPerCell",
 setMethod(f = "listCellsToCollapse",
           signature = "MixedSpeciesSample",
           function (object, threshold=0.9) {
-            return(unlist(lapply(splitMixedSpeciesSampleToSingleSpecies(object, 0.9), listCellsToCollapse), recursive = F))
+            return(unlist(lapply(splitMixedSpeciesSampleToSingleSpecies(object, threshold), listCellsToCollapse), recursive = F))
           })
 
 setMethod(f = "collapseCellsByBarcode",
@@ -159,6 +165,13 @@ setMethod(f = "collapseCellsByBarcode",
             return (object)
           })
 
+#' Compare gene expression levels between two mixed species samples
+#'
+#' @param object1 A \code{MixedSpeciesSample} object.
+#' @param object2 A \code{MixedSpeciesSample} object.
+#' @param threshold1 The threshold for the firs sample.
+#' @param threshold2 The threshold for the second sample.
+#' @return A plot comparing the gene expression levels by species
 setGeneric(name = "compareGeneExpressionLevels",
            def = function(object1, object2, threshold1=0.9, threshold2=0.9) {
              standardGeneric("compareGeneExpressionLevels")

@@ -7,7 +7,7 @@
 geneExpressionDispersion(object)
 }
 \arguments{
-\item{object}{A \code{DigitalGeneExpressionMatrix} object.}
+\item{object}{A \code{data.frame} representing DGE.}
 }
 \value{
 A vector of variance/mean expression values for each gene. Computation in log space.
