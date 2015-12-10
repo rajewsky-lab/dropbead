@@ -17,7 +17,7 @@ compareGeneExpressionLevels(object1, object2, threshold1 = 0.9,
 \item{threshold2}{The threshold for the second sample.}
 }
 \value{
-A plot comparing the gene expression levels by species
+A plot comparing the gene expression levels by species.
 }
 \description{
 Compare gene expression levels between two mixed species samples

@@ -28,8 +28,8 @@ setMethod(f = "splitDgeByGenesOfSpecies",
               object.species1 <- object@dge[setdiff(1:(length(object@genes)), grep("[a-z]", object@genes)), ]
             }
             if (object@species1 == "melanogaster" & object@species2 == "virilis") {
-              object.species1 <- object@dge[grep("Dvir", object@genes), ]
-              object.species2 <- object@dge[setdiff(1:(length(object@genes)), grep("Dvir", object@genes)), ]
+              object.species2 <- object@dge[grep("Dvir_", object@genes), ]
+              object.species1 <- object@dge[setdiff(1:(length(object@genes)), grep("Dvir_", object@genes)), ]
             }
             return (list(object.species1, object.species2))
           })
@@ -171,7 +171,7 @@ setMethod(f = "collapseCellsByBarcode",
 #' @param object2 A \code{MixedSpeciesSample} object.
 #' @param threshold1 The threshold for the firs sample.
 #' @param threshold2 The threshold for the second sample.
-#' @return A plot comparing the gene expression levels by species
+#' @return A plot comparing the gene expression levels by species.
 setGeneric(name = "compareGeneExpressionLevels",
            def = function(object1, object2, threshold1=0.9, threshold2=0.9) {
              standardGeneric("compareGeneExpressionLevels")
@@ -224,94 +224,5 @@ setMethod(f = "compareGeneExpressionLevels",
 
             return (comp.plot)
           })
-
-
-#
-# Plotting functions
-#
-setGeneric(name = "plotHeatmapCorrelationMatrixDGE",
-           def = function(object) {standardGeneric("plotHeatmapCorrelationMatrixDGE")})
-setMethod(f = "plotHeatmapCorrelationMatrixDGE",
-          signature = "MixedSpeciesSample",
-          function(object) {
-            heatmap_palette <- colorRampPalette(c("#3794bf", "#FFFFFF", "#df8640"))
-            heatmap.2(cor(as.matrix(object@dge@dge)), trace = "none", labRow = F,
-                      labCol = F, dendrogram = "row", col=heatmap_palette(20))
-          })
-
-setGeneric(name = "plotCellTypes",
-           def = function(object) {standardGeneric("plotCellTypes")})
-setMethod(f = "plotCellTypes",
-          signature = "data.frame",
-          function(object) {
-            cell.types.plot <- (ggplot(data = object[object$species != "undefined", ],
-                                       aes_string(names(object)[2], names(object)[3], col = names(object)[4]))
-                                + geom_point(size = 4, alpha = 0.4) + theme_classic()
-                                + xlab(paste(names(object)[2], "transcripts"))
-                                + ylab(paste(names(object)[3], "transcripts"))
-                                + scale_color_manual(values = c("steelblue", "purple", "firebrick"),
-                                                     labels = c(paste0(names(object)[2], " (", table(object$species)[1], ")"),
-                                                                paste0("mixed (", table(object$species)[2], ")"),
-                                                                paste0(names(object)[3], " (", table(object$species)[3], ")")))
-                                + geom_point(data = object[object$species == "undefined", ],
-                                             aes_string(names(object)[2], names(object)[3], col = names(object)[4]),
-                                             col = "grey", size = 4, alpha = 0.4)
-                                + plotCommonTheme
-                                + theme(legend.title = element_blank(),
-                                        legend.position = c(0.8, 0.8))
-            )
-            return(cell.types.plot)
-          })
-
-setGeneric(name = "plotGenesHistogram",
-           def = function(object) {standardGeneric("plotGenesHistogram")})
-setMethod(f = "plotGenesHistogram",
-          signature = "data.frame",
-          function(object) {
-            species1 = names(table(object$species))[1]
-            species2 = names(table(object$species))[2]
-
-            plotLocalCommon <- (theme_minimal() + plotCommonGrid + plotCommonTheme
-                                + theme(axis.text.y = element_blank(), axis.ticks = element_blank()))
-
-            genes.species1 <- (ggplot(object[object$species == species1, ], aes(counts))
-                               + xlab(paste(species1, "genes per", species1, "cell")) + ylab("")
-                               + geom_histogram(aes(y = ..density..), fill = "steelblue", alpha = 0.8)
-                                + geom_density(col = "black", size = 1) + plotLocalCommon)
-
-            genes.species2 <- (ggplot(object[object$species == species2, ], aes(counts))
-                               + xlab(paste(species2, "genes per", species2 , "cell")) + ylab("")
-                               + geom_histogram(aes(y = ..density..), fill = "firebrick", alpha = 0.8)
-                               + geom_density(col = "black", size = 1) + plotLocalCommon)
-
-            return (grid.arrange(genes.species1, genes.species2, ncol = 2))
-          })
-
-setGeneric(name = "plotTranscriptsHistogram",
-           def = function(object) {standardGeneric("plotTranscriptsHistogram")})
-setMethod(f = "plotTranscriptsHistogram",
-          signature = "data.frame",
-          function(object) {
-            species1 = names(table(object$species))[1]
-            species2 = names(table(object$species))[2]
-
-            plotLocalCommon <- (theme_minimal() + plotCommonGrid + plotCommonTheme
-                                + theme(axis.text.y = element_blank(), axis.ticks = element_blank()))
-
-            transcripts.species1 <- (ggplot(object[object$species == species1, ], aes(counts))
-                               + xlab(paste(species1, "transcripts per", species1, "cell")) + ylab("") + plotLocalCommon
-                               + geom_histogram(aes(y = ..density..), fill = "steelblue", alpha = 0.8)
-                               + geom_density(col = "black", size = 1))
-
-            transcripts.species2 <- (ggplot(object[object$species == species2, ], aes(counts))
-                               + xlab(paste(species2, "transcripts per", species2, "cell")) + ylab("") + plotLocalCommon
-                               + geom_histogram(aes(y = ..density..), fill = "firebrick", alpha = 0.8)
-                               + geom_density(col = "black", size = 1))
-
-            return (grid.arrange(transcripts.species1, transcripts.species2, ncol = 2))
-          })
-
-
-
 
 

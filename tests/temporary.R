@@ -18,6 +18,12 @@ sum(o3c$V1[1:597])/sum(o3c$V1)
 
 setwd("/data/BIO3/home/nkarais/Work/@@/dropseq_cell/data/")
 
+melvir <- data.frame(fread("zcat < ~/Desktop/tempFlies/sampled25/dge.txt.gz"), row.names = 1)
+mv <- new("MixedSpeciesSample", species1="melanogaster", species2="virilis", dge=melvir)
+plotCellTypes(classifyCellsAndDoublets(mv, 0.51))
+
+
+
 dm <- data.frame(fread("zcat < macosko/hek_3t3_12_5/SRR1873277/dge.txt.gz"), row.names = 1)
 dmT <- data.frame(fread("zcat < macosko/SpeciesMix_ThousandSTAMPs_50cellspermicroliter/SRR1748411/dge.txt.gz"), row.names = 1)
 dmH <- data.frame(fread("zcat < macosko/SpeciesMix_HundredSTAMPs_50cellpermicroliter/SRR1748412/dge.txt.gz"), row.names = 1)
