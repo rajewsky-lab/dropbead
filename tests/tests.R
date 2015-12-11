@@ -7,7 +7,6 @@ m <- new("MixedSpeciesSample", species1="human", species2="mouse", dge=d)
 sh <- splitMixedSpeciesSampleToSingleSpecies(m, 0.9)[[1]]
 sm <- splitMixedSpeciesSampleToSingleSpecies(m, 0.9)[[2]]
 
-
 createSamplesForTesting <- function() {
   genes <- c(sample(letters, 25), sample(paste0(letters, letters), 25),
              sample(LETTERS, 25), sample(paste0(LETTERS, LETTERS), 25))
@@ -53,7 +52,6 @@ createSamplesForTesting <- function() {
 
   return (list(mixed, single.human, single.mouse))
 }
-
 
 testSplittingMixedToSingleSpecies <- function() {
   in.silico.samples <- createSamplesForTesting()

@@ -33,3 +33,9 @@ counts of transcripts per species and characterization of cell.
 `data.frames` corresponding to genes and cells of each species.
 * `splitMixedSpeciesSampleToSingleSpecies`, returns a list of 
 two `SingleSpeciesSample` objects separating the species.
+
+Plotting methods:
+* `plotViolin` (polymorphic).
+* `plotHistogram` (polymorphic).
+* `plotHeatmapCorrelationMatrixDGE`.
+* `plotCellTypes`, plots the separation of species for a `MixedSpeciesSample`.

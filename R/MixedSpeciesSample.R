@@ -47,10 +47,10 @@ setMethod(f = "splitDgeByGenesOfSpecies",
 #' Below that threshold the cell is characterized as a doublet.
 #' @return A \code{data.frame} containing the cell barcodes, the number of transcripts
 #' per species and the characterization of the cell.
-setGeneric(name = "classifyCellsAndDoublets",
-           def = function(object, threshold=0.9) {standardGeneric("classifyCellsAndDoublets")})
-setMethod(f = "classifyCellsAndDoublets",
-          signature = "MixedSpeciesSample",
+setGeneric("classifyCellsAndDoublets",
+           function(object, threshold=0.9) {standardGeneric("classifyCellsAndDoublets")})
+setMethod("classifyCellsAndDoublets",
+          "MixedSpeciesSample",
           function(object, threshold) {
             object.species1 <- splitDgeByGenesOfSpecies(object)[[1]]
             object.species2 <- splitDgeByGenesOfSpecies(object)[[2]]
@@ -85,10 +85,10 @@ setMethod(f = "classifyCellsAndDoublets",
 #' @param threshold The threshold which the ratio of transcripts of one species
 #' over the other has to surpass in order to succesfully assign a cell to a species.
 #' @return A list \code{data.frames} representing the DGEs for each species.
-setGeneric(name = "splitDgeByGenesAndCellsOfSpecies",
-           def = function(object, threshold=0.9) {standardGeneric("splitDgeByGenesAndCellsOfSpecies")})
-setMethod(f = "splitDgeByGenesAndCellsOfSpecies",
-          signature = "MixedSpeciesSample",
+setGeneric("splitDgeByGenesAndCellsOfSpecies",
+           function(object, threshold=0.9) {standardGeneric("splitDgeByGenesAndCellsOfSpecies")})
+setMethod("splitDgeByGenesAndCellsOfSpecies",
+          "MixedSpeciesSample",
           function(object, threshold) {
             object.species1 <- splitDgeByGenesOfSpecies(object)[[1]]
             object.species2 <- splitDgeByGenesOfSpecies(object)[[2]]
@@ -107,10 +107,10 @@ setMethod(f = "splitDgeByGenesAndCellsOfSpecies",
 #' @param threshold The threshold which the ratio of transcripts of one species
 #' over the other has to surpass in order to succesfully assign a cell to a species.
 #' @return A list of two \code{SingleSpeciesSample} objects.
-setGeneric(name = "splitMixedSpeciesSampleToSingleSpecies",
-           def = function(object, threshold=0.9) {standardGeneric("splitMixedSpeciesSampleToSingleSpecies")})
-setMethod(f = "splitMixedSpeciesSampleToSingleSpecies",
-          signature = "MixedSpeciesSample",
+setGeneric("splitMixedSpeciesSampleToSingleSpecies",
+           function(object, threshold=0.9) {standardGeneric("splitMixedSpeciesSampleToSingleSpecies")})
+setMethod("splitMixedSpeciesSampleToSingleSpecies",
+          "MixedSpeciesSample",
           function(object, threshold) {
             s1 <- new("SingleSpeciesSample",
                       species1 = object@species1,
@@ -125,14 +125,14 @@ setMethod(f = "splitMixedSpeciesSampleToSingleSpecies",
             return (list(s1, s2))
           })
 
-setMethod(f = "computeGenesPerCell",
-          signature = "MixedSpeciesSample",
+setMethod("computeGenesPerCell",
+          "MixedSpeciesSample",
           function(object, threshold=0.9) {
             return(rbind.fill(lapply(splitMixedSpeciesSampleToSingleSpecies(object, threshold), computeGenesPerCell)))
           })
 
-setMethod(f = "computeTranscriptsPerCell",
-          signature = "MixedSpeciesSample",
+setMethod("computeTranscriptsPerCell",
+          "MixedSpeciesSample",
           function(object, threshold=0.9) {
             return (rbind.fill(lapply(splitMixedSpeciesSampleToSingleSpecies(object, threshold), computeTranscriptsPerCell)))
           })
@@ -143,14 +143,14 @@ setMethod(f = "computeTranscriptsPerCell",
 #' one is different. The cells are marked as candidates if and only if they're classified
 #' as belonging to the same species.
 #' @param A \code{MixedSpeciesSample} object.
-setMethod(f = "listCellsToCollapse",
-          signature = "MixedSpeciesSample",
+setMethod("listCellsToCollapse",
+          "MixedSpeciesSample",
           function (object, threshold=0.9) {
             return(unlist(lapply(splitMixedSpeciesSampleToSingleSpecies(object, threshold), listCellsToCollapse), recursive = F))
           })
 
-setMethod(f = "collapseCellsByBarcode",
-          signature = "MixedSpeciesSample",
+setMethod("collapseCellsByBarcode",
+          "MixedSpeciesSample",
           function(object, threshold=0.9) {
             listOfCells <- listCellsToCollapse(object, threshold)
 
@@ -172,12 +172,12 @@ setMethod(f = "collapseCellsByBarcode",
 #' @param threshold1 The threshold for the firs sample.
 #' @param threshold2 The threshold for the second sample.
 #' @return A plot comparing the gene expression levels by species.
-setGeneric(name = "compareGeneExpressionLevels",
-           def = function(object1, object2, threshold1=0.9, threshold2=0.9) {
+setGeneric("compareGeneExpressionLevels",
+           function(object1, object2, threshold1=0.9, threshold2=0.9) {
              standardGeneric("compareGeneExpressionLevels")
              })
-setMethod(f = "compareGeneExpressionLevels",
-          signature = "MixedSpeciesSample",
+setMethod("compareGeneExpressionLevels",
+          "MixedSpeciesSample",
           function(object1, object2, threshold1, threshold2) {
             object1.species1 <- splitDgeByGenesAndCellsOfSpecies(object1, threshold1)[[1]]
             object1.species2 <- splitDgeByGenesAndCellsOfSpecies(object1, threshold1)[[2]]

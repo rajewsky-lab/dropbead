@@ -18,10 +18,10 @@ setMethod("initialize",
 #'
 #' @param object A Single species sample.
 #' @return A \code{data.frame} with cells, gene counts and species.
-setGeneric(name = "computeGenesPerCell",
-           def = function(object, ...) {standardGeneric("computeGenesPerCell")})
-setMethod(f = "computeGenesPerCell",
-          signature = "SingleSpeciesSample",
+setGeneric("computeGenesPerCell",
+           function(object, ...) {standardGeneric("computeGenesPerCell")})
+setMethod("computeGenesPerCell",
+          "SingleSpeciesSample",
           function(object) {
             genes <- data.frame("cells" = names(colSums(object@dge != 0)),
                                 "counts" = as.numeric(colSums(object@dge != 0)),
@@ -33,10 +33,10 @@ setMethod(f = "computeGenesPerCell",
 #'
 #' @param object A Single species sample.
 #' @return A \code{data.frame} with cells, transcript counts and species.
-setGeneric(name = "computeTranscriptsPerCell",
-           def = function(object, ...) {standardGeneric("computeTranscriptsPerCell")})
-setMethod(f = "computeTranscriptsPerCell",
-          signature = "SingleSpeciesSample",
+setGeneric("computeTranscriptsPerCell",
+           function(object, ...) {standardGeneric("computeTranscriptsPerCell")})
+setMethod("computeTranscriptsPerCell",
+          "SingleSpeciesSample",
           function(object) {
             transcripts <- data.frame("cells" = object@cells,
                                       "counts" = as.numeric(colSums(object@dge)),
@@ -44,34 +44,34 @@ setMethod(f = "computeTranscriptsPerCell",
             return (transcripts)
           })
 
-setMethod(f = "removeLowQualityGenes",
-          signature = "SingleSpeciesSample",
-          function(object) {
-            return (new("SingleSpeciesSample", species1=object@species1, dge=removeLowQualityGenes(object@dge)))
+setMethod("removeLowQualityGenes",
+          "SingleSpeciesSample",
+          function(object, n) {
+            return (new("SingleSpeciesSample", species1=object@species1, dge=removeLowQualityGenes(object@dge, n)))
           })
 
-setMethod(f = "removeLowQualityCells",
-          signature = "SingleSpeciesSample",
-          function(object) {
-            return (new("SingleSpeciesSample", species1=object@species1, dge=removeLowQualityCells(object@dge)))
+setMethod("removeLowQualityCells",
+          "SingleSpeciesSample",
+          function(object, n) {
+            return (new("SingleSpeciesSample", species1=object@species1, dge=removeLowQualityCells(object@dge, n)))
           })
 
-setMethod(f = "geneExpressionMean",
-          signature = "SingleSpeciesSample",
+setMethod("geneExpressionMean",
+          "SingleSpeciesSample",
           function(object) {
             return (geneExpressionMean(object@dge))
           })
 
-setMethod(f = "geneExpressionDispersion",
-          signature = "SingleSpeciesSample",
+setMethod("geneExpressionDispersion",
+          "SingleSpeciesSample",
           function(object) {
             return (geneExpressionDispersion(object@dge))
           })
 
-setMethod(f = "geneExpressionVariability",
-          signature = "SingleSpeciesSample",
-          function(object, bins, low) {
-            return (geneExpressionVariability(object@dge, bins, low))
+setMethod("geneExpressionVariability",
+          "SingleSpeciesSample",
+          function(object, bins, low, all) {
+            return (geneExpressionVariability(object@dge, bins, low, all))
           })
 
 #' List cells that are candidates for collapsing.
@@ -81,12 +81,12 @@ setMethod(f = "geneExpressionVariability",
 #' as belonging to the same species.
 #' @param A \code{SingleSpeciesSample} object.
 #' @return A list of pairs od candidate cells marked for collapsing.
-setGeneric(name = "listCellsToCollapse",
-           def = function(object, ...) {
+setGeneric("listCellsToCollapse",
+           function(object, ...) {
              standardGeneric("listCellsToCollapse")
            })
-setMethod(f = "listCellsToCollapse",
-          signature = "SingleSpeciesSample",
+setMethod("listCellsToCollapse",
+          "SingleSpeciesSample",
           function (object) {
             theListOfCellPairs <- list()
             cells <- sort(object@cells)
@@ -104,12 +104,12 @@ setMethod(f = "listCellsToCollapse",
 #' Collapse cells by barcodes similarity
 #'
 #' Collapse cells which have barcodes differing by one mutation on the last base.
-setGeneric(name = "collapseCellsByBarcode",
-           def = function(object, ...) {
+setGeneric("collapseCellsByBarcode",
+           function(object, ...) {
              standardGeneric("collapseCellsByBarcode")
            })
-setMethod(f = "collapseCellsByBarcode",
-          signature = "SingleSpeciesSample",
+setMethod("collapseCellsByBarcode",
+          "SingleSpeciesSample",
           function(object) {
             listOfCells <- listCellsToCollapse(object)
 

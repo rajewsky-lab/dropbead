@@ -56,13 +56,16 @@ setMethod(f = "plotHistogram",
             return (g.sp1)
           })
 
+#' Heatmap of the correlation matrix for pairs of cells.
+#'
+#' @param object A \code{data.frame} representing the DGE matrix.
 setGeneric(name = "plotHeatmapCorrelationMatrixDGE",
            def = function(object) {standardGeneric("plotHeatmapCorrelationMatrixDGE")})
 setMethod(f = "plotHeatmapCorrelationMatrixDGE",
-          signature = "MixedSpeciesSample",
+          signature = "data.frame",
           function(object) {
             heatmap_palette <- colorRampPalette(c("#3794bf", "#FFFFFF", "#df8640"))
-            heatmap.2(cor(as.matrix(object@dge@dge)), trace = "none", labRow = F,
+            heatmap.2(cor(as.matrix(object)), trace = "none", labRow = F,
                       labCol = F, dendrogram = "row", col=heatmap_palette(20))
           })
 
