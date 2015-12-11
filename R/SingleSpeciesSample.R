@@ -70,8 +70,8 @@ setMethod("geneExpressionDispersion",
 
 setMethod("geneExpressionVariability",
           "SingleSpeciesSample",
-          function(object, bins, low, all) {
-            return (geneExpressionVariability(object@dge, bins, low, all))
+          function(object, bins, low, do.plot) {
+            return (geneExpressionVariability(object@dge, bins, low, do.plot))
           })
 
 #' List cells that are candidates for collapsing.

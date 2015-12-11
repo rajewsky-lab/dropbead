@@ -37,7 +37,7 @@ setGeneric("geneExpressionMean",
 setMethod("geneExpressionMean",
           "data.frame",
           function(object) {
-            return (apply(log(object+1, 2), 1, mean))
+            return (log(apply(object, 1, mean)+1, 2))
           })
 
 #' Compute the dispersion of each gene across all cells.
@@ -49,7 +49,7 @@ setGeneric("geneExpressionDispersion",
 setMethod("geneExpressionDispersion",
           "data.frame",
           function(object) {
-            return (apply(log(object+1, 2), 1, var)/apply(log(object+1, 2), 1, mean))
+            return (log(apply(object, 1, var)/apply(object, 1, mean), 2))
           })
 
 #' Gene variability
@@ -63,35 +63,31 @@ setMethod("geneExpressionDispersion",
 #'
 #' @param object A \code{data.frame} representing DGE.
 #' @param bins The number of bins.
-#' @param low Boolean. If True then the lowly varied genes are returned.
-#' @return A vector of the top \code{ntop} highly varied genes.
+#' @return A vector of the top highly varied genes.
 setGeneric("geneExpressionVariability",
-           function (object, bins=20, low=FALSE, all=FALSE) {standardGeneric("geneExpressionVariability")})
+           function (object, bins=20, low=F, do.plot=F) {standardGeneric("geneExpressionVariability")})
 setMethod("geneExpressionVariability",
           "data.frame",
-          function(object, bins, low, all) {
-            mean.sorted <- sort(geneExpressionMean(object))
-            bin.size = ceiling(dim(object)[1]/bins)
-            all.genes <- c()
-            hv.genes <- c()
-            lv.genes <- c()
+          function(object, bins, low, do.plot) {
+            x = geneExpressionMean(object)
+            y = geneExpressionDispersion(object)
+            x.bins = cut(x, bins)
+            names(x.bins) = names(x)
+            y.mean = tapply(y, x.bins, mean)
+            y.sd = tapply(y, x.bins, sd)
+            ret = (y - y.mean[as.numeric(x.bins)])/y.sd[as.numeric(x.bins)]
+            names(ret) = names(x)
+            high.var <- intersect(names(ret[ret > 2/log(2) & ret < 12]), names(x[x > 2]))
+            low.var <- c()
 
-            for (bin in 0:(bins-1)) {
-              if (bin == bins-1) {
-                endpoint = dim(object)[1]
-              } else {
-                endpoint = (bin+1)*bin.size
-              }
-              bin.genes <- mean.sorted[(bin*bin.size+1):endpoint]
-              bin.disp <- geneExpressionDispersion(object)[names(bin.genes)]
-              all.genes <- c(all.genes, scale(bin.disp)[, ])
-              hv.genes <- c(hv.genes, scale(bin.disp)[scale(bin.disp) > 2, ])
-              lv.genes <- c(lv.genes, scale(bin.disp)[scale(bin.disp) < -1.6, ])
+            if (do.plot) {
+              plot(x, ret, pch=19, cex=0.3)
+              points(x[high.var], ret[high.var], pch=19, cex=0.5, col = 'red')
             }
-
-            if (all == T) {return (all.genes)}
-            if (low == F) {return (hv.genes)}
-            if (low == T) {return (lv.genes)}
+            if (low) {
+              return (low.var)
+            }
+            return (high.var)
           })
 
 #' Identify doublets

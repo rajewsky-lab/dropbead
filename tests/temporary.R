@@ -7,31 +7,10 @@ mspm <- new("MixedSpeciesSample", species1="human", species2="mouse", dge=dm)
 sh <- splitMixedSpeciesSampleToSingleSpecies(mspm)[[1]]
 sh.f <- removeLowQualityCells(removeLowQualityGenes(sh, n=31), n=4000)
 
-head(nbt@data[, 1:2])
-log(head(sh.f@dge[, 1:2])+1, 2)
-dim(nbt@data)
-dim(sh.f@dge)
 
-qn <- geneExpressionVariability(sh, all=T)
+
+geneExpressionVariability(sh.f, do.plot=T)
 
 
 
-pq <- prcomp(t(sh.f@dge[names(q), ]), scale. = T,  center = T)
-plot(pq$x)
-
-
-
-summary(p)
-
-
-length(q)
-
-
-plot(qn)
-
-plot(geneExpressionMean(sh@dge)[sort(names(qn))], qn[sort(names(qn))])
-
-
-head(qn[sort(names(qn))], 10)
-head(geneExpressionMean(sh@dge)[sort(names(qn))], 10)
 
