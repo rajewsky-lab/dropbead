@@ -64,33 +64,60 @@ setMethod("geneExpressionDispersion",
 #' @return A scatterplot comparing the gene expression levels and with the correlation
 #' among the samples computed.
 setGeneric("compareSingleCellsAgainstBulk",
-           function(single.cells, bulk.data, log.space=T, method="pearson", ylab="single cell sample",
-                    col="steelblue", ...) {
+           function(single.cells, bulk.data, log.space=T, method="pearson",
+                    ylab="single cell sample", col="steelblue", ...) {
              standardGeneric("compareSingleCellsAgainstBulk")
            })
 setMethod("compareSingleCellsAgainstBulk",
           "data.frame",
           function(single.cells, bulk.data, log.space, method, ylab, col) {
+            corr = computeCorrelationSingleCellsVersusBulk(single.cells, bulk.data, log.space, method)[[1]]
+            df = computeCorrelationSingleCellsVersusBulk(single.cells, bulk.data, log.space, method)[[2]]
+
+            g <- (ggplot(df, aes(x=bulk, y=sc)) + geom_point(col=col, alpha=0.5, size = 3)
+                  + theme_minimal() + plotCommonGrid + plotCommonTheme + ylab(ylab)
+                  + ggtitle(paste0("R= ", corr)) + scale_x_continuous(expand=c(0.01, 0.02))
+                  + theme(axis.ticks.y = element_blank(),
+                          plot.title = element_text(size=22)) )
+            return (g)
+          })
+
+setGeneric("computeCorrelationSingleCellsVersusBulk",
+           function(single.cells, bulk.data, log.space=T, method="pearson") {
+             standardGeneric("computeCorrelationSingleCellsVersusBulk")
+           })
+setMethod("computeCorrelationSingleCellsVersusBulk",
+          "data.frame",
+          function(single.cells, bulk.data, log.space, method) {
             common.genes <- intersect(rownames(single.cells), rownames(bulk.data))
             if (log.space) {
-              sc <- apply(log(single.cells[common.genes, ]+1, 2), 1, mean)
+              sc <- geneExpressionMean(single.cells[common.genes, ])
             }
             else {
               sc <- apply(single.cells[common.genes, ], 1, mean)
             }
             bulk <- bulk.data[common.genes, ]
-            correlation = signif(cor(sc, bulk, method=method), 2)
 
             df = data.frame("sc"=sc, "bulk"=bulk)
-            g <- (ggplot(df, aes(x=bulk, y=sc)) + geom_point(col=col, alpha=0.5, size = 3)
-                  + theme_minimal() + plotCommonGrid + plotCommonTheme + ylab(ylab)
-                  + ggtitle(paste0("R= ", correlation)) + scale_x_continuous(expand=c(0.01, 0.02))
-                  + theme(axis.ticks.y = element_blank(),
-                          plot.title = element_text(size=22)) )
+            correlation = signif(cor(sc, bulk, method=method), 2)
 
-            return (g)
+            return (list(correlation, df))
           })
 
+setGeneric("computeCellGeneFilteringFromBulk",
+           function(single.cells, bulk.data, log.space=T, method="pearson",
+                    min.cells=1000, max.cells=2000, iteration.steps=50) {
+             standardGeneric("computeCellGeneFilteringFromBulk")
+           })
+setMethod("computeCellGeneFilteringFromBulk",
+          "data.frame",
+          function(single.cells, bulk.data, log.space, method,
+                   min.cells, max.cells, iteration.steps) {
+            for (cells in seq(min.cells, max.cells, iteration.steps)) {
+              temp.it <- removeLowQualityGenes(removeLowQualityCells(single.cells, cells))
+              print (c(computeCorrelationSingleCellsVersusBulk(temp.it, bulk.data)[[1]], cells))
+            }
+          })
 
 #' Gene variability
 #'

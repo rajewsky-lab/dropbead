@@ -155,10 +155,7 @@ setMethod("compareGeneExpressionLevels",
 
             comp.plot <- (ggplot(data = big.df, aes(x = sample1, y = sample2))
                           + ggtitle(paste0("R= ", cor))
-                          + xlab(name1)
-                          + ylab(name2)
-#                          + xlab(paste0(expression(log2), " transcripts (", name1, ")"))
-#                          + ylab(paste0(expression(log2), " transcripts (", name2, ")"))
+                          + xlab(name1) + ylab(name2)
                           + geom_point(col=col, alpha=0.5, size=2)
                           + scale_y_continuous(expand = c(0.02, 0.02)) + scale_x_continuous(expand = c(0.02, 0.02))
                           + theme_minimal() + plotCommonGrid + plotCommonTheme

@@ -117,12 +117,6 @@ testSplittingMixedToSingleSpecies()
 
 
 
-compareGeneExpressionLevels(smo, sm)
-
-
-
-
-
 
 
 
