@@ -11,13 +11,11 @@ majors
 	- requires: find set of genes for the different phases
 	- install.packages('VennDiagram') and play with the draw.triple.Venn method
 - refactor compareGeneExpressionLevels 
-	- refactor it for SingleSpeciesSamples
 	- separate the computation (should return a df) from the plotting function
 	- separate the computation of correlation into a new function
 
 
 HIGH PRIORITY
-- compareGeneExpressionLevels
 - sc vs bulk comparison
 	- computes correlation between sample and bulk 
 		(extra option for log space)
