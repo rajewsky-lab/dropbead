@@ -119,3 +119,10 @@ testSplittingMixedToSingleSpecies()
 
 compareGeneExpressionLevels(smo, sm)
 
+
+
+
+
+
+
+

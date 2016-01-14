@@ -52,6 +52,46 @@ setMethod("geneExpressionDispersion",
             return (log(apply(object, 1, var)/apply(object, 1, mean), 2))
           })
 
+#' Compare average gene expression from single cell data against bulk data.
+#'
+#' @param single.cells A \code{data.frame} containing genes as rownames and columns as cells.
+#' @param bulk.data A \code{data.frame} containing genes as rownames and a single column
+#' with transcript counts.
+#' @param log.space If True (default value) then the average of single cells data is
+#' performed in log space.
+#' @param ylab Label of the single cell sample.
+#' @param col The color of the scatterplot points.
+#' @return A scatterplot comparing the gene expression levels and with the correlation
+#' among the samples computed.
+setGeneric("compareSingleCellsAgainstBulk",
+           function(single.cells, bulk.data, log.space=T, method="pearson", ylab="single cell sample",
+                    col="steelblue", ...) {
+             standardGeneric("compareSingleCellsAgainstBulk")
+           })
+setMethod("compareSingleCellsAgainstBulk",
+          "data.frame",
+          function(single.cells, bulk.data, log.space, method, ylab, col) {
+            common.genes <- intersect(rownames(single.cells), rownames(bulk.data))
+            if (log.space) {
+              sc <- apply(log(single.cells[common.genes, ]+1, 2), 1, mean)
+            }
+            else {
+              sc <- apply(single.cells[common.genes, ], 1, mean)
+            }
+            bulk <- bulk.data[common.genes, ]
+            correlation = signif(cor(sc, bulk, method=method), 2)
+
+            df = data.frame("sc"=sc, "bulk"=bulk)
+            g <- (ggplot(df, aes(x=bulk, y=sc)) + geom_point(col=col, alpha=0.5, size = 3)
+                  + theme_minimal() + plotCommonGrid + plotCommonTheme + ylab(ylab)
+                  + ggtitle(paste0("R= ", correlation)) + scale_x_continuous(expand=c(0.01, 0.02))
+                  + theme(axis.ticks.y = element_blank(),
+                          plot.title = element_text(size=22)) )
+
+            return (g)
+          })
+
+
 #' Gene variability
 #'
 #' Compute the variability of each gene across all cells. The average expression

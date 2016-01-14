@@ -4,7 +4,6 @@ minors
 - perhaps improve the constructors of Samples to include more information
 
 majors
-- create a sc vs bulk comparison function
 - complete the identifyDoublets functions
 - create pcaMethods to separate 	
 - create cellCycleIdentification method
@@ -12,13 +11,6 @@ majors
 	- install.packages('VennDiagram') and play with the draw.triple.Venn method
 - refactor compareGeneExpressionLevels 
 	- separate the computation (should return a df) from the plotting function
-	- separate the computation of correlation into a new function
 
 
 HIGH PRIORITY
-- implement 'method' parameter for the compareGeneExpressionLevels,
-	learn a bit about pearson vs spearman
-- sc vs bulk comparison
-	- computes correlation between sample and bulk 
-		(extra option for log space)
-	- plots the expression levels for common genes

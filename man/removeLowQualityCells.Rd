@@ -4,7 +4,7 @@
 \alias{removeLowQualityCells}
 \title{Filter out low quality cells}
 \usage{
-removeLowQualityCells(object, n = 2000, ...)
+removeLowQualityCells(object, min.genes = 1000, ...)
 }
 \arguments{
 \item{object}{A \code{data.frame} representing DGE.}

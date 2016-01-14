@@ -131,14 +131,17 @@ setMethod("collapseCellsByBarcode",
 #'
 #' @param object1 A \code{SingleSpeciesSample} object.
 #' @param object2 A \code{SingleSpeciesSample} object.
+#' @param name1 The name of the first sample.
+#' @param name2 The name of the second sample.
 #' @return A plot comparing the gene expression levels.
 setGeneric("compareGeneExpressionLevels",
-           function(object1, object2, name1="sample1", name2="sample2", col="steelblue", ...) {
+           function(object1, object2, name1="sample1", name2="sample2",
+                    col="steelblue", method="pearson", ...) {
              standardGeneric("compareGeneExpressionLevels")
            })
 setMethod("compareGeneExpressionLevels",
           "SingleSpeciesSample",
-          function(object1, object2, name1, name2, col) {
+          function(object1, object2, name1, name2, col, method) {
             common.genes <- intersect(object1@genes, object2@genes)
 
             object1 <- object1@dge[common.genes, ]
@@ -148,7 +151,7 @@ setMethod("compareGeneExpressionLevels",
                                  "sample1" = log(as.numeric(rowSums(object1))+1, 2),
                                  "sample2" = log(as.numeric(rowSums(object2))+1, 2))
 
-            cor <- signif(cor(big.df$sample1, big.df$sample2, method="spearman"), 2)
+            cor <- signif(cor(big.df$sample1, big.df$sample2, method=method), 2)
 
             comp.plot <- (ggplot(data = big.df, aes(x = sample1, y = sample2))
                           + ggtitle(paste0("R= ", cor))
@@ -164,23 +167,9 @@ setMethod("compareGeneExpressionLevels",
             return (comp.plot)
           })
 
-compareSingleCellsAgainstBulk <- function(scdf, bulkdf, log.space=T, method="pearson", ylab="single cell sample", color="steelblue") {
-  common.genes <- intersect(rownames(scdf), rownames(bulkdf))
-  
-  if (log.space) {
-    sc <- apply(log(scdf[common.genes, ]+1, 2), 1, mean)
-  }
-  else {
-    sc <- apply(scdf[common.genes, ], 1, mean)
-  }
-  bulk <- bulkdf[common.genes, ]
-  correlation = signif(cor(sc, bulk, method=method), 2)
-  
-  df = data.frame("sc"=sc, "bulk"=bulk)
-  g <- (ggplot(df, aes(x=bulk, y=sc)) + geom_point(col=color, alpha=0.5, size = 3) 
-        + theme_minimal() + plotCommonGrid + plotCommonTheme + ylab(ylab) 
-        + ggtitle(paste0("R= ", correlation))
-        + theme(axis.ticks.y = element_blank(),
-                plot.title = element_text(size=22)) + scale_x_continuous(expand=c(0.01, 0.02)))
-  return (g)
-}
+setMethod("compareSingleCellsAgainstBulk",
+          "SingleSpeciesSample",
+          function(single.cells, bulk.data, log.space, method, ylab, col) {
+            return (compareSingleCellsAgainstBulk(single.cells@dge, bulk.data,
+                                                  log.space, method, ylab, col))
+            })

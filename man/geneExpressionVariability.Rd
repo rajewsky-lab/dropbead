@@ -4,23 +4,21 @@
 \alias{geneExpressionVariability}
 \title{Gene variability}
 \usage{
-geneExpressionVariability(object, bins = 20, low = FALSE)
+geneExpressionVariability(object, bins = 20, low = F, do.plot = F)
 }
 \arguments{
 \item{object}{A \code{data.frame} representing DGE.}
 
 \item{bins}{The number of bins.}
-
-\item{low}{Boolean. If True then the lowly varied genes are returned.}
 }
 \value{
-A vector of the top \code{ntop} highly varied genes.
+A vector of the top highly varied genes.
 }
 \description{
 Compute the variability of each gene across all cells. The average expression
 of each gene is first computed, sorted and the genes are placed into \code{b}
 bins. The dispersion of genes into each bin is then z-normalized. A cuttoff
-is then used to identify the top \code{h} highly variable genes. Genes with
+is then used to identify the top \code{h} highly variable genes. Genes with 0
 mean expression should be removed before using this function. Computation
 is performed in log space.
 }
