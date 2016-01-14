@@ -163,3 +163,24 @@ setMethod("compareGeneExpressionLevels",
 
             return (comp.plot)
           })
+
+compareSingleCellsAgainstBulk <- function(scdf, bulkdf, log.space=T, method="pearson", ylab="single cell sample", color="steelblue") {
+  common.genes <- intersect(rownames(scdf), rownames(bulkdf))
+  
+  if (log.space) {
+    sc <- apply(log(scdf[common.genes, ]+1, 2), 1, mean)
+  }
+  else {
+    sc <- apply(scdf[common.genes, ], 1, mean)
+  }
+  bulk <- bulkdf[common.genes, ]
+  correlation = signif(cor(sc, bulk, method=method), 2)
+  
+  df = data.frame("sc"=sc, "bulk"=bulk)
+  g <- (ggplot(df, aes(x=bulk, y=sc)) + geom_point(col=color, alpha=0.5, size = 3) 
+        + theme_minimal() + plotCommonGrid + plotCommonTheme + ylab(ylab) 
+        + ggtitle(paste0("R= ", correlation))
+        + theme(axis.ticks.y = element_blank(),
+                plot.title = element_text(size=22)) + scale_x_continuous(expand=c(0.01, 0.02)))
+  return (g)
+}

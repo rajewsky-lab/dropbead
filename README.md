@@ -22,6 +22,8 @@ number of genes.
 * `listCellsToCollapse`, returns a list with pairs of cells sharing
 11 bases in their barcodes.
 * `collapseCellsByBarcodes`.
+* `compareGeneExpressionLevels`, plots gene expression levels for
+two samples.
 
 Methods contained in the `MixedSpeciesSample` class (in addition
 to the ones that exist through polymorphism):

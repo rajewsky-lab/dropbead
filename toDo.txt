@@ -16,6 +16,8 @@ majors
 
 
 HIGH PRIORITY
+- implement 'method' parameter for the compareGeneExpressionLevels,
+	learn a bit about pearson vs spearman
 - sc vs bulk comparison
 	- computes correlation between sample and bulk 
 		(extra option for log space)
