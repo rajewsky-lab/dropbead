@@ -44,16 +44,16 @@ setMethod("computeTranscriptsPerCell",
             return (transcripts)
           })
 
-setMethod("removeLowQualityGenes",
-          "SingleSpeciesSample",
-          function(object, n) {
-            return (new("SingleSpeciesSample", species1=object@species1, dge=removeLowQualityGenes(object@dge, n)))
-          })
-
 setMethod("removeLowQualityCells",
           "SingleSpeciesSample",
-          function(object, n) {
-            return (new("SingleSpeciesSample", species1=object@species1, dge=removeLowQualityCells(object@dge, n)))
+          function(object, min.genes) {
+            return (new("SingleSpeciesSample", species1=object@species1, dge=removeLowQualityCells(object@dge, min.genes)))
+          })
+
+setMethod("removeLowQualityGenes",
+          "SingleSpeciesSample",
+          function(object, min.cells) {
+            return (new("SingleSpeciesSample", species1=object@species1, dge=removeLowQualityGenes(object@dge, min.cells)))
           })
 
 setMethod("geneExpressionMean",
@@ -112,6 +112,9 @@ setMethod("collapseCellsByBarcode",
           "SingleSpeciesSample",
           function(object) {
             listOfCells <- listCellsToCollapse(object)
+            if (length(listOfCells) == 0) {
+              return(object)
+            }
 
             for (index in 1:length(listOfCells)) {
               object@dge <- cbind(object@dge, rowSums(object@dge[, listOfCells[[index]]]))
@@ -124,3 +127,37 @@ setMethod("collapseCellsByBarcode",
             return (object)
           })
 
+#' Compare gene expression levels between two single species samples
+#'
+#' @param object1 A \code{SingleSpeciesSample} object.
+#' @param object2 A \code{SingleSpeciesSample} object.
+#' @return A plot comparing the gene expression levels.
+setGeneric("compareGeneExpressionLevels",
+           function(object1, object2, name1="sample1", name2="sample2", col="steelblue", ...) {
+             standardGeneric("compareGeneExpressionLevels")
+           })
+setMethod("compareGeneExpressionLevels",
+          "SingleSpeciesSample",
+          function(object1, object2, name1, name2, col) {
+            common.genes <- intersect(object1@genes, object2@genes)
+
+            object1 <- object1@dge[common.genes, ]
+            object2 <- object2@dge[common.genes, ]
+
+            big.df <- data.frame("genes" = common.genes,
+                                 "sample1" = log(as.numeric(rowSums(object1))+1, 2),
+                                 "sample2" = log(as.numeric(rowSums(object2))+1, 2))
+
+            cor <- signif(cor(big.df$sample1, big.df$sample2, method="spearman"), 2)
+
+            comp.plot <- (ggplot(data = big.df, aes(x = sample1, y = sample2))
+                          + ggtitle(paste0("R= ", cor))
+                          + xlab(paste0(expression(log2), " transcripts (", name1, ")"))
+                          + ylab(paste0(expression(log2), " transcripts (", name2, ")"))
+                          + geom_point(col=col, alpha=0.5, size=2)
+                          + scale_y_continuous(expand = c(0, 0.05)) + scale_x_continuous(expand = c(0, 0.02))
+                          + theme_minimal() + plotCommonGrid + plotCommonTheme
+                          + theme(axis.ticks.y = element_blank()))
+
+            return (comp.plot)
+          })

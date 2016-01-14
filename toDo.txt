@@ -1,14 +1,10 @@
 minors
-- set base case in the collapseCells functions in case there are no
-cells to collapse
 - implement for low.var in the geneExpressionVariability method
 - improve the (gg)plot in the geneExpressionVariability method
 - perhaps improve the constructors of Samples to include more information
-- replace 'n' in removeLowQualityGenes (and Cells) with min.cells and min.genes
-	- include polymorphic functions
-	- change documentation
 
 majors
+- create a sc vs bulk comparison function
 - complete the identifyDoublets functions
 - create pcaMethods to separate 	
 - create cellCycleIdentification method
@@ -18,3 +14,11 @@ majors
 	- refactor it for SingleSpeciesSamples
 	- separate the computation (should return a df) from the plotting function
 	- separate the computation of correlation into a new function
+
+
+HIGH PRIORITY
+- compareGeneExpressionLevels
+- sc vs bulk comparison
+	- computes correlation between sample and bulk 
+		(extra option for log space)
+	- plots the expression levels for common genes

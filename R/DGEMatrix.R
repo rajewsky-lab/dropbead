@@ -1,19 +1,5 @@
 # Functions that act directly on the DGE matrix, represented by a data.frame.
 
-#' Filter out low quality genes
-#'
-#' Remove genes which are expressed in less than a minimum number of cells.
-#' @param object A \code{data.frame} representing DGE.
-#' @param n The minimum number of cells.
-#' @return A \code{data.frame} without the low quality genes.
-setGeneric("removeLowQualityGenes",
-           function(object, n=3) {standardGeneric("removeLowQualityGenes")})
-setMethod("removeLowQualityGenes",
-          "data.frame",
-          function(object, n) {
-            return (object[rownames(object) %in% rownames(object)[rowSums(object != 0) > n], ])
-          })
-
 #' Filter out low quality cells
 #'
 #' Remove cells expressing less than a minimum of genes (default value is 2000).
@@ -21,11 +7,25 @@ setMethod("removeLowQualityGenes",
 #' @param n The minimum number of genes required.
 #' @return A \code{data.frame} without the low quality cells.
 setGeneric("removeLowQualityCells",
-           function(object, n=2000, ...) {standardGeneric("removeLowQualityCells")})
+           function(object, min.genes=1000, ...) {standardGeneric("removeLowQualityCells")})
 setMethod("removeLowQualityCells",
           "data.frame",
-          function(object, n) {
-            return (object[, names(object)[colSums(object != 0) >= n]])
+          function(object, min.genes) {
+            return (object[, names(object)[colSums(object != 0) >= min.genes]])
+          })
+
+#' Filter out low quality genes
+#'
+#' Remove genes which are expressed in less than a minimum number of cells.
+#' @param object A \code{data.frame} representing DGE.
+#' @param n The minimum number of cells.
+#' @return A \code{data.frame} without the low quality genes.
+setGeneric("removeLowQualityGenes",
+           function(object, min.cells=3) {standardGeneric("removeLowQualityGenes")})
+setMethod("removeLowQualityGenes",
+          "data.frame",
+          function(object, min.cells) {
+            return (object[rownames(object) %in% rownames(object)[rowSums(object != 0) > min.cells], ])
           })
 
 #' Compute the average expression of each gene across all cells.

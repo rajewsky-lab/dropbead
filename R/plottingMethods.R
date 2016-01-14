@@ -93,6 +93,7 @@ setMethod(f = "plotCellTypes",
                                              aes_string(names(object)[2], names(object)[3], col = names(object)[4]),
                                              col = "grey", size = 4, alpha = 0.4)
                                 + plotCommonTheme
+                                + guides(col = guide_legend(override.aes = list(alpha=1)))
                                 + theme(legend.title = element_blank(),
                                         legend.position = c(0.8, 0.8))
             )

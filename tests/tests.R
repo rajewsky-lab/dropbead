@@ -7,6 +7,11 @@ m <- new("MixedSpeciesSample", species1="human", species2="mouse", dge=d)
 sh <- splitMixedSpeciesSampleToSingleSpecies(m, 0.9)[[1]]
 sm <- splitMixedSpeciesSampleToSingleSpecies(m, 0.9)[[2]]
 
+do <- data.frame(fread("zcat < /data/BIO3/home/nkarais/Work/@@/dropseq_cell/data/hek3t3Pilot002/hek3t3_pilot/NR_JS0001/hek3t3pilot2/dge.txt.gz"), row.names = 1)
+mo <- new("MixedSpeciesSample", species1="human", species2="mouse", dge=do)
+sho <- splitMixedSpeciesSampleToSingleSpecies(mo, 0.9)[[1]]
+smo <- splitMixedSpeciesSampleToSingleSpecies(mo, 0.9)[[2]]
+
 createSamplesForTesting <- function() {
   genes <- c(sample(letters, 25), sample(paste0(letters, letters), 25),
              sample(LETTERS, 25), sample(paste0(LETTERS, LETTERS), 25))
@@ -108,7 +113,6 @@ testSplittingMixedToSingleSpecies <- function() {
   }
 
 testSplittingMixedToSingleSpecies()
-
 
 
 

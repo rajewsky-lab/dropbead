@@ -137,6 +137,21 @@ setMethod("computeTranscriptsPerCell",
             return (rbind.fill(lapply(splitMixedSpeciesSampleToSingleSpecies(object, threshold), computeTranscriptsPerCell)))
           })
 
+setMethod("removeLowQualityCells",
+          "MixedSpeciesSample",
+          function(object, min.genes) {
+            return (new("MixedSpeciesSample", species1=object@species1, species2=object@species2,
+                        dge=removeLowQualityCells(object@dge, min.genes)))
+          })
+
+setMethod("removeLowQualityGenes",
+          "MixedSpeciesSample",
+          function(object, min.cells) {
+            return (new("MixedSpeciesSample", species1=object@species1, species2=object@species2,
+                        dge=removeLowQualityGenes(object@dge, min.cells)))
+          })
+
+
 #' List cells that are candidates for collapsing.
 #'
 #' Identify and list cells which share 11 bases in their barcodes and only the last
@@ -153,6 +168,9 @@ setMethod("collapseCellsByBarcode",
           "MixedSpeciesSample",
           function(object, threshold=0.9) {
             listOfCells <- listCellsToCollapse(object, threshold)
+            if (length(listOfCells) == 0) {
+              return(object)
+            }
 
             for (index in 1:length(listOfCells)) {
               object@dge <- cbind(object@dge, rowSums(object@dge[, listOfCells[[index]]]))
@@ -172,13 +190,9 @@ setMethod("collapseCellsByBarcode",
 #' @param threshold1 The threshold for the firs sample.
 #' @param threshold2 The threshold for the second sample.
 #' @return A plot comparing the gene expression levels by species.
-setGeneric("compareGeneExpressionLevels",
-           function(object1, object2, threshold1=0.9, threshold2=0.9) {
-             standardGeneric("compareGeneExpressionLevels")
-             })
 setMethod("compareGeneExpressionLevels",
           "MixedSpeciesSample",
-          function(object1, object2, threshold1, threshold2) {
+          function(object1, object2, threshold1, threshold2, name1="sample1", name2="sample2") {
             object1.species1 <- splitDgeByGenesAndCellsOfSpecies(object1, threshold1)[[1]]
             object1.species2 <- splitDgeByGenesAndCellsOfSpecies(object1, threshold1)[[2]]
             object2.species1 <- splitDgeByGenesAndCellsOfSpecies(object2, threshold2)[[1]]
@@ -193,14 +207,12 @@ setMethod("compareGeneExpressionLevels",
             object2.species2 <- object2.species2[row.names(object2.species2) %in% common.genes.species2, ]
 
             big.df <- data.frame("genes" = c(common.genes.species1, common.genes.species2),
-                                 "sample1" = c(log(as.numeric(rowSums(object1.species1)), 2),
-                                               log(as.numeric(rowSums(object1.species2)), 2)),
-                                 "sample2" = c(log(as.numeric(rowSums(object2.species1)), 2),
-                                               log(as.numeric(rowSums(object2.species2)), 2)),
+                                 "sample1" = c(log(as.numeric(rowSums(object1.species1))+1, 2),
+                                               log(as.numeric(rowSums(object1.species2))+1, 2)),
+                                 "sample2" = c(log(as.numeric(rowSums(object2.species1))+1, 2),
+                                               log(as.numeric(rowSums(object2.species2))+1, 2)),
                                  "species" = c(rep(object1@species1, length(common.genes.species1)),
                                                rep(object1@species2, length(common.genes.species2))))
-            big.df <- big.df[big.df$sample1 >= 0, ]
-            big.df <- big.df[big.df$sample2 >= 0, ]
 
             cor.species1 <- signif(cor(big.df$sample1[big.df$species == object1@species1],
                                        big.df$sample2[big.df$species == object1@species1],
@@ -213,11 +225,11 @@ setMethod("compareGeneExpressionLevels",
                                         paste0(object1@species2, " (R=", cor.species2, ")"))
 
             comp.plot <- (ggplot(data = big.df, aes(x = sample1, y = sample2))
-                          + xlab(expression(paste(log[2]~'transcripts (sample1)')))
-                          + ylab(expression(paste(log[2]~'transcripts (sample2)')))
-                          + geom_point(aes(col = species), alpha = 0.5, size = 2)
+                          + xlab(paste0(expression(log2), " transcripts (", name1, ")"))
+                          + ylab(paste0(expression(log2), " transcripts (", name2, ")"))
+                          + geom_point(aes(col=species), alpha = 0.5, size = 2)
                           + facet_grid(~ species, labeller = ) + guides(col = F)
-                          + scale_y_continuous(expand = c(0, 0))
+                          + scale_y_continuous(expand=c(0, 0)) + scale_x_continuous(expand=c(0, 0))
                           + theme_minimal() + plotCommonGrid + plotCommonTheme
                           + scale_color_manual(values = c("steelblue", "firebrick"))
                           + theme(axis.ticks.y = element_blank()))
