@@ -99,23 +99,39 @@ setMethod("computeCorrelationSingleCellsVersusBulk",
             bulk <- bulk.data[common.genes, ]
 
             df = data.frame("sc"=sc, "bulk"=bulk)
-            correlation = signif(cor(sc, bulk, method=method), 2)
+            correlation = signif(cor(sc, bulk, method=method), 3)
 
             return (list(correlation, df))
           })
 
 setGeneric("computeCellGeneFilteringFromBulk",
            function(single.cells, bulk.data, log.space=T, method="pearson",
-                    min.cells=1000, max.cells=2000, iteration.steps=50) {
+                    min.cells=500, max.cells=2000, iteration.steps=50, do.plot=F) {
              standardGeneric("computeCellGeneFilteringFromBulk")
            })
 setMethod("computeCellGeneFilteringFromBulk",
           "data.frame",
           function(single.cells, bulk.data, log.space, method,
-                   min.cells, max.cells, iteration.steps) {
+                   min.cells, max.cells, iteration.steps, do.plot) {
+            cor.list = c()
+            cell.list = c()
+
             for (cells in seq(min.cells, max.cells, iteration.steps)) {
-              temp.it <- removeLowQualityGenes(removeLowQualityCells(single.cells, cells))
-              print (c(computeCorrelationSingleCellsVersusBulk(temp.it, bulk.data)[[1]], cells))
+              temp.sample <- removeLowQualityGenes(removeLowQualityCells(single.cells, cells))
+              temp.cor = computeCorrelationSingleCellsVersusBulk(temp.sample, bulk.data)[[1]]
+              cor.list = c(cor.list, temp.cor)
+              cell.list = c(cell.list, dim(temp.sample)[2])
+              print (c(temp.cor, cells))
+            }
+            if (do.plot) {
+              df <- data.frame("min.genes"=seq(min.cells, max.cells, iteration.steps),
+                               "correlation"=cor.list,
+                               "cells"=cell.list)
+              g1 <- (ggplot(df, aes(x=min.genes, y=correlation)) + geom_point(size=3, col="steelblue")
+                     + theme_minimal() + plotCommonGrid + plotCommonTheme)
+              g2 <- (ggplot(df, aes(x=min.genes, y=cells)) + geom_point(size=3, col="steelblue")
+                     + theme_minimal() + plotCommonGrid + plotCommonTheme)
+              return(grid.arrange(g1, g2, ncol=2))
             }
           })
 

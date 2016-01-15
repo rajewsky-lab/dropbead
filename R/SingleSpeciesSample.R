@@ -170,3 +170,11 @@ setMethod("compareSingleCellsAgainstBulk",
             return (compareSingleCellsAgainstBulk(single.cells@dge, bulk.data,
                                                   log.space, method, ylab, col))
             })
+
+setMethod("computeCellGeneFilteringFromBulk",
+          "SingleSpeciesSample",
+          function(single.cells, bulk.data, log.space, method,
+                   min.cells, max.cells, iteration.steps) {
+            computeCellGeneFilteringFromBulk(single.cells@dge, bulk.data, log.space, method,
+                                             min.cells, max.cells, iteration.steps)
+            })
