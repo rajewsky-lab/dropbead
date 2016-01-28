@@ -65,6 +65,44 @@ setMethod("geneExpressionDispersion",
             return (log(apply(object, 1, var)/apply(object, 1, mean), 2))
           })
 
+setGeneric("computeCorrelationSingleCellsVersusBulk",
+           function(single.cells, bulk.data, measure="umi", method="pearson") {
+             standardGeneric("computeCorrelationSingleCellsVersusBulk")
+           })
+setMethod("computeCorrelationSingleCellsVersusBulk",
+          "data.frame",
+          function(single.cells, bulk.data, measure, method) {
+            common.genes <- intersect(rownames(single.cells), rownames(bulk.data))
+            if (measure == "mean") {
+              sc <- geneExpressionMean(single.cells[common.genes, , drop=F])
+            }
+            else {
+              sc <- geneExpressionSumUMI(single.cells[common.genes, , drop=F])
+            }
+            bulk <- bulk.data[common.genes, ]
+
+            df = data.frame("sc"=sc, "bulk"=bulk)
+            correlation = signif(cor(sc, bulk, method=method), 3)
+
+            return (list(correlation, df))
+          })
+
+setGeneric("computeCorrelationCellToCellVersusBulk",
+           function(single.cells, bulk.data, measure="umi", method="pearson") {
+             standardGeneric("computeCorrelationCellToCellVersusBulk")
+           })
+setMethod("computeCorrelationCellToCellVersusBulk",
+          "data.frame",
+          function(single.cells, bulk.data, measure, method) {
+            vectorOfCorrelations <- c()
+            for (cell in names(single.cells)) {
+              vectorOfCorrelations <- c(vectorOfCorrelations,
+                                        computeCorrelationSingleCellsVersusBulk(single.cells[, cell, drop=F],
+                                                                                bulk.data)[[1]])
+            }
+            return (vectorOfCorrelations)
+          })
+
 #' Compare average gene expression from single cell data against bulk data.
 #'
 #' @param single.cells A \code{data.frame} containing genes as rownames and columns as cells.
@@ -93,28 +131,6 @@ setMethod("compareSingleCellsAgainstBulk",
                   + theme(axis.ticks.y = element_blank(),
                           plot.title = element_text(size=22)) )
             return (g)
-          })
-
-setGeneric("computeCorrelationSingleCellsVersusBulk",
-           function(single.cells, bulk.data, measure="umi", method="pearson") {
-             standardGeneric("computeCorrelationSingleCellsVersusBulk")
-           })
-setMethod("computeCorrelationSingleCellsVersusBulk",
-          "data.frame",
-          function(single.cells, bulk.data, measure, method) {
-            common.genes <- intersect(rownames(single.cells), rownames(bulk.data))
-            if (measure == "mean") {
-              sc <- geneExpressionMean(single.cells[common.genes, ])
-            }
-            else {
-              sc <- geneExpressionSumUMI(single.cells[common.genes, ])
-            }
-            bulk <- bulk.data[common.genes, ]
-
-            df = data.frame("sc"=sc, "bulk"=bulk)
-            correlation = signif(cor(sc, bulk, method=method), 3)
-
-            return (list(correlation, df))
           })
 
 setGeneric("computeCellGeneFilteringFromBulk",

@@ -164,6 +164,20 @@ setMethod("compareGeneExpressionLevels",
             return (comp.plot)
           })
 
+setMethod("computeCorrelationSingleCellsVersusBulk",
+          "SingleSpeciesSample",
+          function(single.cells, bulk.data, measure, method) {
+            corr = computeCorrelationSingleCellsVersusBulk(single.cells@dge, bulk.data, measure, method)[[1]]
+            df = computeCorrelationSingleCellsVersusBulk(single.cells@dge, bulk.data, measure, method)[[2]]
+            return (list(corr, df))
+          })
+
+setMethod("computeCorrelationCellToCellVersusBulk",
+          "SingleSpeciesSample",
+          function(single.cells, bulk.data, measure, method) {
+            return (computeCorrelationCellToCellVersusBulk(single.cells@dge, bulk.data, measure, method))
+          })
+
 setMethod("compareSingleCellsAgainstBulk",
           "SingleSpeciesSample",
           function(single.cells, bulk.data, measure, method, ylab, col) {

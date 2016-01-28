@@ -13,6 +13,7 @@ Methods contained in the `SingleSpeciesSample` class:
 * `computeGenesPerCell`.
 * `computeTranscriptsPerCell`.
 * `geneExpressionMean`.
+* `geneExpressionSumUMI`.
 * `geneExpressionDispersion`.
 * `geneExpressionVariability`.
 * `removeLowQualityGenes`, removes genes which are not expressed in
@@ -22,6 +23,8 @@ number of genes.
 * `listCellsToCollapse`, returns a list with pairs of cells sharing
 11 bases in their barcodes.
 * `collapseCellsByBarcodes`.
+* `computeCorrelationSingleCellsVersusBulk`.
+* `compareSingleCellsAgainstBulk`.
 * `compareGeneExpressionLevels`, plots gene expression levels for
 two samples.
 

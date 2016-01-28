@@ -56,6 +56,19 @@ setMethod(f = "plotHistogram",
             return (g.sp1)
           })
 
+setGeneric("plotHistogramCorrelations",
+           function(object, xlab="", col="steelblue") {
+             standardGeneric("plotHistogramCorrelations")})
+setMethod("plotHistogramCorrelations",
+          "vector",
+          function(object, xlab, col) {
+            g <- (ggplot(data.frame("correlation"=object), aes(correlation))
+                  + geom_histogram(binwidth=0.005, fill=col)
+                  + ylab("") + xlab(xlab) + theme_minimal() + plotCommonGrid + plotCommonTheme)
+            return (g)
+          })
+
+
 #' Heatmap of the correlation matrix for pairs of cells.
 #'
 #' @param object A \code{data.frame} representing the DGE matrix.
