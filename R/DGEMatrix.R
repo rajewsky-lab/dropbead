@@ -14,6 +14,14 @@ setMethod("removeLowQualityCells",
             return (object[, names(object)[colSums(object != 0) >= min.genes]])
           })
 
+setGeneric("keepBestCells",
+           function(object, num.cells) {standardGeneric("keepBestCells")})
+setMethod("keepBestCells",
+          "data.frame",
+          function(object, num.cells) {
+            return (object[, head(order(colSums(object), decreasing=T), num.cells), drop=F])
+          })
+
 #' Filter out low quality genes
 #'
 #' Remove genes which are expressed in less than a minimum number of cells.

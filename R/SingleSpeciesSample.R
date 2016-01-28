@@ -50,6 +50,13 @@ setMethod("removeLowQualityCells",
             return (new("SingleSpeciesSample", species1=object@species1, dge=removeLowQualityCells(object@dge, min.genes)))
           })
 
+setMethod("keepBestCells",
+          "SingleSpeciesSample",
+          function(object, num.cells) {
+            return (new("SingleSpeciesSample", species1=object@species1,
+                        dge=keepBestCells(object@dge, num.cells)))
+          })
+
 setMethod("removeLowQualityGenes",
           "SingleSpeciesSample",
           function(object, min.cells) {

@@ -23,7 +23,9 @@ number of genes.
 * `listCellsToCollapse`, returns a list with pairs of cells sharing
 11 bases in their barcodes.
 * `collapseCellsByBarcodes`.
-* `computeCorrelationSingleCellsVersusBulk`.
+* `computeCorrelationSingleCellsVersusBulk`, averages over the sample.
+* `computeCorrelationCellToCellVersusBulk`, returns a vector of 
+individual correlations.
 * `compareSingleCellsAgainstBulk`.
 * `compareGeneExpressionLevels`, plots gene expression levels for
 two samples.
@@ -42,5 +44,6 @@ two `SingleSpeciesSample` objects separating the species.
 Plotting methods:
 * `plotViolin` (polymorphic).
 * `plotHistogram` (polymorphic).
+* `plotHistogramCorrelations`, plots histogram of individual correlations.
 * `plotHeatmapCorrelationMatrixDGE`.
 * `plotCellTypes`, plots the separation of species for a `MixedSpeciesSample`.
