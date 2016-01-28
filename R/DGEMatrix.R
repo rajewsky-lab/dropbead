@@ -37,7 +37,20 @@ setGeneric("geneExpressionMean",
 setMethod("geneExpressionMean",
           "data.frame",
           function(object) {
-            return (log(apply(object, 1, mean)+1, 2))
+            return (log(apply(object, 1, mean), 2))
+          })
+
+#' Compute the sum of transcript counts of each gene across all cells.
+#'
+#' @param object A \code{data.frame} representing DGE.
+#' @return A vector of the logarithm of the sum of all UMI values for each gene.
+#' A pseudocount is added to avoid infinities.
+setGeneric("geneExpressionSumUMI",
+           function (object) {standardGeneric("geneExpressionSumUMI")})
+setMethod("geneExpressionSumUMI",
+          "data.frame",
+          function(object) {
+            return (log(rowSums(object)+1, 2))
           })
 
 #' Compute the dispersion of each gene across all cells.
@@ -64,15 +77,15 @@ setMethod("geneExpressionDispersion",
 #' @return A scatterplot comparing the gene expression levels and with the correlation
 #' among the samples computed.
 setGeneric("compareSingleCellsAgainstBulk",
-           function(single.cells, bulk.data, log.space=T, method="pearson",
+           function(single.cells, bulk.data, measure="umi", method="pearson",
                     ylab="single cell sample", col="steelblue", ...) {
              standardGeneric("compareSingleCellsAgainstBulk")
            })
 setMethod("compareSingleCellsAgainstBulk",
           "data.frame",
-          function(single.cells, bulk.data, log.space, method, ylab, col) {
-            corr = computeCorrelationSingleCellsVersusBulk(single.cells, bulk.data, log.space, method)[[1]]
-            df = computeCorrelationSingleCellsVersusBulk(single.cells, bulk.data, log.space, method)[[2]]
+          function(single.cells, bulk.data, measure, method, ylab, col) {
+            corr = computeCorrelationSingleCellsVersusBulk(single.cells, bulk.data, measure, method)[[1]]
+            df = computeCorrelationSingleCellsVersusBulk(single.cells, bulk.data, measure, method)[[2]]
 
             g <- (ggplot(df, aes(x=bulk, y=sc)) + geom_point(col=col, alpha=0.5, size = 3)
                   + theme_minimal() + plotCommonGrid + plotCommonTheme + ylab(ylab)
@@ -83,18 +96,18 @@ setMethod("compareSingleCellsAgainstBulk",
           })
 
 setGeneric("computeCorrelationSingleCellsVersusBulk",
-           function(single.cells, bulk.data, log.space=T, method="pearson") {
+           function(single.cells, bulk.data, measure="umi", method="pearson") {
              standardGeneric("computeCorrelationSingleCellsVersusBulk")
            })
 setMethod("computeCorrelationSingleCellsVersusBulk",
           "data.frame",
-          function(single.cells, bulk.data, log.space, method) {
+          function(single.cells, bulk.data, measure, method) {
             common.genes <- intersect(rownames(single.cells), rownames(bulk.data))
-            if (log.space) {
+            if (measure == "mean") {
               sc <- geneExpressionMean(single.cells[common.genes, ])
             }
             else {
-              sc <- apply(single.cells[common.genes, ], 1, mean)
+              sc <- geneExpressionSumUMI(single.cells[common.genes, ])
             }
             bulk <- bulk.data[common.genes, ]
 

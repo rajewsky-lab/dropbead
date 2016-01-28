@@ -166,9 +166,9 @@ setMethod("compareGeneExpressionLevels",
 
 setMethod("compareSingleCellsAgainstBulk",
           "SingleSpeciesSample",
-          function(single.cells, bulk.data, log.space, method, ylab, col) {
+          function(single.cells, bulk.data, measure, method, ylab, col) {
             return (compareSingleCellsAgainstBulk(single.cells@dge, bulk.data,
-                                                  log.space, method, ylab, col))
+                                                  measure, method, ylab, col))
             })
 
 setMethod("computeCellGeneFilteringFromBulk",

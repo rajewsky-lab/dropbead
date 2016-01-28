@@ -115,6 +115,14 @@ testSplittingMixedToSingleSpecies <- function() {
 testSplittingMixedToSingleSpecies()
 
 
+head(mo@dge[, 1], 200)
+sum(mo@dge[, 1])
+
+classifyCellsAndDoublets(mo)
+37447+569
+
+
+
 
 
 
