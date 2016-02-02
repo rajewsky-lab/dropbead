@@ -48,10 +48,10 @@ setMethod(f = "splitDgeByGenesOfSpecies",
 #' @return A \code{data.frame} containing the cell barcodes, the number of transcripts
 #' per species and the characterization of the cell.
 setGeneric("classifyCellsAndDoublets",
-           function(object, threshold=0.9) {standardGeneric("classifyCellsAndDoublets")})
+           function(object, threshold=0.9, min.trans=300) {standardGeneric("classifyCellsAndDoublets")})
 setMethod("classifyCellsAndDoublets",
           "MixedSpeciesSample",
-          function(object, threshold) {
+          function(object, threshold, min.trans) {
             object.species1 <- splitDgeByGenesOfSpecies(object)[[1]]
             object.species2 <- splitDgeByGenesOfSpecies(object)[[2]]
 
@@ -60,7 +60,7 @@ setMethod("classifyCellsAndDoublets",
                              "s2" = as.vector(colSums(object.species2)),
                              "species" = "", stringsAsFactors = F)
             for (i in 1:dim(df)[1]) {
-               if (df$s1[i] < quantile(df$s1, 0.25) & df$s2[i] < quantile(df$s2, 0.25)) {
+               if (df$s1[i] + df$s2[i] < min.trans) {
                  df$species[i] = "undefined"
                  next
                }
@@ -127,8 +127,8 @@ setMethod("splitMixedSpeciesSampleToSingleSpecies",
 
 setMethod("computeGenesPerCell",
           "MixedSpeciesSample",
-          function(object, threshold=0.9) {
-            return(rbind.fill(lapply(splitMixedSpeciesSampleToSingleSpecies(object, threshold), computeGenesPerCell)))
+          function(object, min.reads, threshold=0.9) {
+            return(rbind.fill(lapply(splitMixedSpeciesSampleToSingleSpecies(object, threshold), computeGenesPerCell, min.reads=min.reads)))
           })
 
 setMethod("computeTranscriptsPerCell",
@@ -142,6 +142,13 @@ setMethod("removeLowQualityCells",
           function(object, min.genes) {
             return (new("MixedSpeciesSample", species1=object@species1, species2=object@species2,
                         dge=removeLowQualityCells(object@dge, min.genes)))
+          })
+
+setMethod("keepBestCells",
+          "MixedSpeciesSample",
+          function(object, num.cells, min.num.trans) {
+            return (new("MixedSpeciesSample", species1=object@species1, species2=object@species2,
+                        dge=keepBestCells(object@dge, num.cells, min.num.trans)))
           })
 
 setMethod("removeLowQualityGenes",

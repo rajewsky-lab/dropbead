@@ -2,21 +2,21 @@ library(data.table)
 library(dropseq)
 
 # load a DGE to test
-d <- data.frame(fread("zcat < /data/BIO3/home/nkarais/Work/@@/dropseq_cell/data/macosko/hek_3t3_12_5/SRR1873277/dge.txt.gz"), row.names = 1)
+d <- data.frame(fread("zcat < /data/BIO3/home/nkarais/Work/@@/dropseq_cell/data/macosko/SpeciesMix_ThousandSTAMPs_50cellspermicroliter/sampled136/dge.txt.gz"), row.names = 1)
 m <- new("MixedSpeciesSample", species1="human", species2="mouse", dge=d)
 sh <- splitMixedSpeciesSampleToSingleSpecies(m, 0.9)[[1]]
 sm <- splitMixedSpeciesSampleToSingleSpecies(m, 0.9)[[2]]
 
-d <- data.frame(fread("zcat < /data/BIO3/home/nkarais/Work/@@/dropseq_cell/data/macosko/SpeciesMix_ThousandSTAMPs_50cellspermicroliter/SRR1748411/dge.txt.gz"), row.names = 1)
-m <- new("MixedSpeciesSample", species1="human", species2="mouse", dge=d)
-
-summary(computeGenesPerCell(m)$counts)
-summary(computeTranscriptsPerCell(m)$counts)
+d50 <- data.frame(fread("zcat < /data/BIO3/home/nkarais/Work/@@/dropseq_cell/data/macosko/SpeciesMix_ThousandSTAMPs_50cellspermicroliter/SRR1748411/dge.txt.gz"), row.names = 1)
+m50 <- new("MixedSpeciesSample", species1="human", species2="mouse", dge=d50)
 
 do <- data.frame(fread("zcat < /data/BIO3/home/nkarais/Work/@@/dropseq_cell/data/hek3t3Pilot002/hek3t3_pilot/NR_JS0001/hek3t3pilot2/dge.txt.gz"), row.names = 1)
 mo <- new("MixedSpeciesSample", species1="human", species2="mouse", dge=do)
 sho <- splitMixedSpeciesSampleToSingleSpecies(mo, 0.9)[[1]]
 smo <- splitMixedSpeciesSampleToSingleSpecies(mo, 0.9)[[2]]
+
+d.hek.50 <- data.frame(fread("zcat < /mydaten/hek3t3fly/Rajewsky/NR_CK_020/ds_009_50/dge.txt.gz"), row.names = 1)
+o.50 <- new("MixedSpeciesSample", species1="human", species2="mouse", dge=d.hek.50)
 
 createSamplesForTesting <- function() {
   genes <- c(sample(letters, 25), sample(paste0(letters, letters), 25),
@@ -71,23 +71,23 @@ testSplittingMixedToSingleSpecies <- function() {
   single.mouse <- in.silico.samples[[3]]
 
   # Test number of cells for each species
-  if (!table(classifyCellsAndDoublets(mixed, 0.6)$species)[[1]] == dim(single.human@dge)[2]) {
+  if (!table(classifyCellsAndDoublets(mixed, 0.6, min.trans=0)$species)[[1]] == dim(single.human@dge)[2]) {
     print ("Error! Number of human cells doesn't match.")
   } else {
       print ("Testing number of human cells... Passed")
     }
-  if (!table(classifyCellsAndDoublets(mixed, 0.6)$species)[[3]] == dim(single.mouse@dge)[2]) {
+  if (!table(classifyCellsAndDoublets(mixed, 0.6, min.trans=0)$species)[[3]] == dim(single.mouse@dge)[2]) {
     print ("Error! Number of mouse cells doesn't match.")
   } else {
     print ("Testing number of mouse cells... Passed")
   }
   # Test number of genes per cell per species
-  if (sum(computeGenesPerCell(mixed, 0.6)[1:240, 'counts'] == computeGenesPerCell(single.human)$counts) != 240) {
+  if (sum(computeGenesPerCell(mixed, 0.6, min.reads = 0)[1:240, 'counts'] == computeGenesPerCell(single.human, min.reads = 0)$counts) != 240) {
     print ("Error! The number of genes in human cells don't match")
   } else {
     print ("Testing number of genes in human cells... Passed")
   }
-  if (sum(computeGenesPerCell(mixed, 0.6)[241:500, 'counts'] == computeGenesPerCell(single.mouse)$counts) != 260) {
+  if (sum(computeGenesPerCell(mixed, 0.6, min.reads=0)[241:500, 'counts'] == computeGenesPerCell(single.mouse, min.reads = 0)$counts) != 260) {
     print ("Error! The number of genes in mouse cells don't match")
   } else {
     print ("Testing number of genes in mouse cells... Passed")
@@ -119,6 +119,64 @@ testSplittingMixedToSingleSpecies <- function() {
   }
 
 testSplittingMixedToSingleSpecies()
+
+plotViolin(computeGenesPerCell(m))
+length(m@dge[, 1][m@dge[, 1] >= 10])
+head(computeGenesPerCell(splitMixedSpeciesSampleToSingleSpecies(m)[[1]], min.reads = 1))
+
+computeGenesPerCell(new("SingleSpeciesSample", species1="human", dge=m@dge[, 1, drop=F]))
+
+hist(computeGenesPerCell(keepBestCells(o.50, 1000), min.reads = 2)$counts, breaks = 100, col ='red',
+     xlab = 'genes per cell (10 reads required to call a gene expressed)', main='')
+
+
+hist(computeGenesPerCell(m, min.reads = 10)$counts, breaks = 100, col ='red',
+     xlab = 'genes per cell (10 reads required to call a gene expressed)', main='')
+
+
+plotViolin(computeGenesPerCell(keepBestCells(m, min.num.trans = 500)))
+plotCellTypes(classifyCellsAndDoublets(m, min.trans = 500))
+plotCellTypes(classifyCellsAndDoublets(keepBestCells(m, min.num.trans = 500)))
+
+
+mg1 <- data.frame(fread("/data/BIO3/home/nkarais/Work/@@/dropseq_cell/data/macosko/SpeciesMix_ThousandSTAMPs_50cellspermicroliter/sampled136/dge_summary.txt"))
+mg2 <- data.frame(fread("zcat < /data/BIO3/home/nkarais/Work/@@/dropseq_cell/data/macosko/SpeciesMix_ThousandSTAMPs_50cellspermicroliter/sampled136/out_readcounts.txt.gz"))
+names(mg2) <- c("reads", "CELL_BARCODE")
+mq <- merge(mg2, mg1, by="CELL_BARCODE")
+
+g1 <- data.frame(fread("/mydaten/hek3t3fly/ZinzenWahle/NR_CK_019/ds_008_100/dge_summary.txt"))
+g2 <- data.frame(fread("zcat < /mydaten/hek3t3fly/ZinzenWahle/NR_CK_019/ds_008_100/out_readcounts.txt.gz"))
+names(g2) <- c("reads", "CELL_BARCODE")
+q <- merge(g2, g1, by="CELL_BARCODE")
+
+g1 <- data.frame(fread("/mydaten/hek3t3fly/Rajewsky/NR_CK_020/ds_009_50/dge_summary.txt"))
+g2 <- data.frame(fread("zcat < /mydaten/hek3t3fly/Rajewsky/NR_CK_020/ds_009_50/out_readcounts.txt.gz"))
+names(g2) <- c("reads", "CELL_BARCODE")
+q <- merge(g2, g1, by="CELL_BARCODE")
+
+compareGeneExpressionLevels(m, mo, threshold1=0.9, threshold2=0.9)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

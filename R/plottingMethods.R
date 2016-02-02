@@ -99,9 +99,9 @@ setMethod(f = "plotCellTypes",
                                 + xlab(paste(names(object)[2], "transcripts"))
                                 + ylab(paste(names(object)[3], "transcripts"))
                                 + scale_color_manual(values = c("steelblue", "purple", "firebrick"),
-                                                     labels = c(paste0(names(object)[2], " (", table(object$species)[1], ")"),
-                                                                paste0("mixed (", table(object$species)[2], ")"),
-                                                                paste0(names(object)[3], " (", table(object$species)[3], ")")))
+                                                     labels = c(paste0(names(object)[2], " (", table(object$species)[names(object)[2]], ")"),
+                                                                paste0("mixed (", table(object$species)['mixed'], ")"),
+                                                                paste0(names(object)[3], " (", table(object$species)[names(object)[3]], ")")))
                                 + geom_point(data = object[object$species == "undefined", ],
                                              aes_string(names(object)[2], names(object)[3], col = names(object)[4]),
                                              col = "grey", size = 4, alpha = 0.4)

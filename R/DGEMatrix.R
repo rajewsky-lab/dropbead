@@ -15,11 +15,16 @@ setMethod("removeLowQualityCells",
           })
 
 setGeneric("keepBestCells",
-           function(object, num.cells) {standardGeneric("keepBestCells")})
+           function(object, num.cells, min.num.trans=NULL) {standardGeneric("keepBestCells")})
 setMethod("keepBestCells",
           "data.frame",
-          function(object, num.cells) {
-            return (object[, head(order(colSums(object), decreasing=T), num.cells), drop=F])
+          function(object, num.cells, min.num.trans) {
+            if (!is.null(min.num.trans)) {
+              return (object[, colSums(object) >= min.num.trans, drop=F])
+            }
+            else {
+              return (object[, head(order(colSums(object), decreasing=T), num.cells), drop=F])
+            }
           })
 
 #' Filter out low quality genes

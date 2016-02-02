@@ -19,12 +19,12 @@ setMethod("initialize",
 #' @param object A Single species sample.
 #' @return A \code{data.frame} with cells, gene counts and species.
 setGeneric("computeGenesPerCell",
-           function(object, ...) {standardGeneric("computeGenesPerCell")})
+           function(object, min.reads=2, ...) {standardGeneric("computeGenesPerCell")})
 setMethod("computeGenesPerCell",
           "SingleSpeciesSample",
-          function(object) {
-            genes <- data.frame("cells" = names(colSums(object@dge != 0)),
-                                "counts" = as.numeric(colSums(object@dge != 0)),
+          function(object, min.reads) {
+            genes <- data.frame("cells" = names(colSums(object@dge >= min.reads)),
+                                "counts" = as.numeric(colSums(object@dge >= min.reads)),
                                 "species" = object@species1)
             return (genes)
           })
@@ -52,9 +52,9 @@ setMethod("removeLowQualityCells",
 
 setMethod("keepBestCells",
           "SingleSpeciesSample",
-          function(object, num.cells) {
+          function(object, num.cells, min.num.trans) {
             return (new("SingleSpeciesSample", species1=object@species1,
-                        dge=keepBestCells(object@dge, num.cells)))
+                        dge=keepBestCells(object@dge, num.cells, min.num.trans)))
           })
 
 setMethod("removeLowQualityGenes",
