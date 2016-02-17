@@ -20,10 +20,12 @@ setMethod("keepBestCells",
           "data.frame",
           function(object, num.cells, min.num.trans) {
             if (!is.null(min.num.trans)) {
-              return (object[, colSums(object) >= min.num.trans, drop=F])
+              tdf <- object[, colSums(object) >= min.num.trans, drop=F]
+              return (tdf[rowSums(tdf) > 0, ])
             }
             else {
-              return (object[, head(order(colSums(object), decreasing=T), num.cells), drop=F])
+              tdf <- object[, head(order(colSums(object), decreasing=T), num.cells), drop=F]
+              return (tdf[rowSums(tdf) > 0, ])
             }
           })
 
