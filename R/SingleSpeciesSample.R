@@ -199,3 +199,71 @@ setMethod("computeCellGeneFilteringFromBulk",
             computeCellGeneFilteringFromBulk(single.cells@dge, bulk.data, log.space, method,
                                              min.cells, max.cells, iteration.steps)
             })
+
+setGeneric("assignCellCyclePhases",
+           function(object, do.plot=T) {
+             standardGeneric("assignCellCyclePhases")
+           })
+setMethod("assignCellCyclePhases",
+          "SingleSpeciesSample",
+          function(object, do.plot) {
+            require(xlsx)
+            cc_genes <- read.xlsx("~/Desktop/things/git/dropseq/data/cell_cycle_genes.xlsx", sheetIndex = 2, stringsAsFactors = F)
+
+            g.g1s <- gsub(" ", "", cc_genes$G1.S)
+            g.g1s <- g.g1s[!is.na(g.g1s)]
+            g.s <- gsub(" ", "", cc_genes$S)
+            g.s <- g.s[!is.na(g.s)]
+            g.g2m <- gsub(" ", "", cc_genes$G2.M)
+            g.g2m <- g.g2m[!is.na(g.g2m)]
+            g.m <- gsub(" ", "", cc_genes$M)
+            g.m <- g.m[!is.na(g.m)]
+            g.mg1 <- gsub(" ", "", cc_genes$M.G1)
+            g.mg1 <- g.mg1[!is.na(g.mg1)]
+
+            phase_score = data.frame("G1.S"=rep(0, length(object@cells)),
+                                     "S"=rep(0, length(object@cells)),
+                                     "G2.M"=rep(0, length(object@cells)),
+                                     "M"=rep(0, length(object@cells)),
+                                     "M.G1"=rep(0, length(object@cells)))
+
+            for (i in 1:length(object@cells)) {
+              phase_score$G1.S[i] = mean(log(object@dge[g.g1s, i]+1, 2), na.rm=T)
+              phase_score$S[i] = mean(log(object@dge[g.s, i]+1, 2), na.rm=T)
+              phase_score$G2.M[i] = mean(log(object@dge[g.g2m, i]+1, 2), na.rm=T)
+              phase_score$M[i] = mean(log(object@dge[g.m, i]+1, 2), na.rm=T)
+              phase_score$M.G1[i] = mean(log(object@dge[g.mg1, i]+1, 2), na.rm=T)
+            }
+
+            phase_score_norm <- data.frame(apply(phase_score, 2, scale))
+            phase_score_norm2 <- data.frame(t(apply(phase_score_norm, 1, scale)))
+            names(phase_score_norm2) <- names(phase_score_norm)
+            phases <- apply(phase_score_norm2, 1, which.max)
+
+            df1 <- phase_score_norm2[phases == 1, ]
+            df1 <- round(df1[order(df1$G1.S, decreasing = T), ], 1)
+            df1 <- df1[order(df1$G1.S, df1$S, df1$G2.M, df1$M, df1$M.G1, decreasing = T), ]
+
+            df2 <- phase_score_norm2[phases == 2, ]
+            df2 <- round(df2[order(df2$S, decreasing = T), ], 1)
+            df2 <- df2[order(df2$S, df2$G1.S, df2$G2.M, df2$M, df2$M.G1, decreasing = T), ]
+
+            df3 <- phase_score_norm2[phases == 3, ]
+            df3 <- round(df3[order(df3$G2.M, decreasing = T), ], 1)
+            df3 <- df3[order(df3$G2.M,  df3$M, df3$S, df3$M.G1, df3$G1.S, decreasing = T), ]
+
+            df4 <- phase_score_norm2[phases == 4, ]
+            df4 <- round(df4[order(df4$M, decreasing = T), ], 1)
+            df4 <- df4[order(df4$M, df4$M.G1, df4$G2.M, df4$S, df4$G1.S, decreasing = T), ]
+
+            df5 <- phase_score_norm2[phases == 5, ]
+            df5 <- round(df5[order(df5$M.G1, decreasing = T), ], 1)
+            df5 <- df5[order(df5$M.G1, df5$G1.S, df5$G2.M, df5$S, df5$M,  decreasing = T), ]
+
+            heatmap_palette <- colorRampPalette(c("#3794bf", "#FFFFFF", "#cc4140"))
+            if (do.plot) {
+              heatmap.2(as.matrix(t(rbind(df1, df2, df3, df4, df5))), trace='none', Rowv=F, Colv=F, dendrogram='none', labCol=F, col=heatmap_palette(10))
+            }
+
+            return(rbind(df1, df2, df3, df4, df5))
+          })
