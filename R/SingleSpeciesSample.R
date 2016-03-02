@@ -208,7 +208,14 @@ setMethod("assignCellCyclePhases",
           "SingleSpeciesSample",
           function(object, do.plot) {
             require(xlsx)
-            cc_genes <- read.xlsx("~/Desktop/things/git/dropseq/data/cell_cycle_genes.xlsx", sheetIndex = 2, stringsAsFactors = F)
+
+            if (object@species1 == "human") {
+              cc_genes <- read.xlsx("~/Desktop/things/git/dropseq/data/cell_cycle_genes.xlsx", sheetIndex = 2, stringsAsFactors = F)
+            }
+
+            if (object@species1 == "mouse") {
+              cc_genes <- read.xlsx("~/Desktop/things/git/dropseq/data/cell_cycle_genes.xlsx", sheetIndex = 3, stringsAsFactors = F)
+            }
 
             g.g1s <- gsub(" ", "", cc_genes$G1.S)
             g.g1s <- g.g1s[!is.na(g.g1s)]
