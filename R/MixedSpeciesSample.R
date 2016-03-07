@@ -24,11 +24,12 @@ setMethod(f = "splitDgeByGenesOfSpecies",
           signature = "MixedSpeciesSample",
           function(object) {
             if (object@species1 == "human" & object@species2 == "mouse") {
-              object.species1 <- object@dge[object@genes %in% human_genes, ]
-              object.species2 <- object@dge[object@genes %in% mouse_genes, ]
-
-#              object.species2 <- object@dge[grep("[a-z]", object@genes), ]
-#              object.species1 <- object@dge[setdiff(1:(length(object@genes)), grep("[a-z]", object@genes)), ]
+#               if (prefix == F) {
+#                 object.species1 <- object@dge[object@genes %in% human_genes, ]
+#                 object.species2 <- object@dge[object@genes %in% mouse_genes, ]
+#               }
+              object.species1 <- object@dge[grep("hg_", object@genes), ]
+              object.species2 <- object@dge[grep("mm_", object@genes), ]
             }
             if (object@species1 == "melanogaster" & object@species2 == "virilis") {
               object.species2 <- object@dge[grep("Dvir_", object@genes), ]

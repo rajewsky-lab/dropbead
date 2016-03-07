@@ -159,7 +159,15 @@ compareGeneExpressionLevels(m, mo, threshold1=0.9, threshold2=0.9)
 plotCellTypes(classifyCellsAndDoublets(mo))
 
 
+old.m <- new("MixedSpeciesSample", species1="human", species2="mouse",
+             dge=data.frame(fread("zcat < /mydaten/projects/hek3t3/data/ds_003_10_old/dge.txt.gz"), row.names = 1))
+new.m <- new("MixedSpeciesSample", species1="human", species2="mouse",
+             dge=data.frame(fread("zcat < /mydaten/projects/hek3t3/data/ds_003_10_trimmed_adapters/dge.txt.gz"), row.names = 1))
 
+
+plotCellTypes(classifyCellsAndDoublets(new.m))
+
+plotViolin(computeGenesPerCell(keepBestCells(new.m, min.num.trans = 2000), min.reads = 1), attribute = "genes")
 
 
 
