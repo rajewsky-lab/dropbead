@@ -248,23 +248,23 @@ setMethod("assignCellCyclePhases",
             phases <- apply(phase_score_norm2, 1, which.max)
 
             df1 <- phase_score_norm2[phases == 1, ]
-            df1 <- round(df1[order(df1$G1.S, decreasing = T), ], 1)
+            df1 <- round(df1[order(df1$G1.S, decreasing = T), ], 2)
             df1 <- df1[order(df1$G1.S, df1$S, df1$G2.M, df1$M, df1$M.G1, decreasing = T), ]
 
             df2 <- phase_score_norm2[phases == 2, ]
-            df2 <- round(df2[order(df2$S, decreasing = T), ], 1)
+            df2 <- round(df2[order(df2$S, decreasing = T), ], 2)
             df2 <- df2[order(df2$S, df2$G1.S, df2$G2.M, df2$M, df2$M.G1, decreasing = T), ]
 
             df3 <- phase_score_norm2[phases == 3, ]
-            df3 <- round(df3[order(df3$G2.M, decreasing = T), ], 1)
+            df3 <- round(df3[order(df3$G2.M, decreasing = T), ], 2)
             df3 <- df3[order(df3$G2.M,  df3$M, df3$S, df3$M.G1, df3$G1.S, decreasing = T), ]
 
             df4 <- phase_score_norm2[phases == 4, ]
-            df4 <- round(df4[order(df4$M, decreasing = T), ], 1)
+            df4 <- round(df4[order(df4$M, decreasing = T), ], 2)
             df4 <- df4[order(df4$M, df4$M.G1, df4$G2.M, df4$S, df4$G1.S, decreasing = T), ]
 
             df5 <- phase_score_norm2[phases == 5, ]
-            df5 <- round(df5[order(df5$M.G1, decreasing = T), ], 1)
+            df5 <- round(df5[order(df5$M.G1, decreasing = T), ], 2)
             df5 <- df5[order(df5$M.G1, df5$G1.S, df5$G2.M, df5$S, df5$M,  decreasing = T), ]
 
             heatmap_palette <- colorRampPalette(c("#3794bf", "#FFFFFF", "#cc4140"))

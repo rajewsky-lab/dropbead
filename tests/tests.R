@@ -171,4 +171,13 @@ plotViolin(computeGenesPerCell(keepBestCells(new.m, min.num.trans = 2000), min.r
 
 
 
+head(splitMixedSpeciesSampleToSingleSpecies(mo)[[1]]@genes)
+
+v <- head(splitMixedSpeciesSampleToSingleSpecies(mo)[[1]]@genes)
+
+v
+
+
+
+
 
