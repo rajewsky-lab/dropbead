@@ -1,0 +1,98 @@
+---
+title: "dropbead tutorial"
+author: "NIkolaos Karaiskos"
+date: "21 Apr 2016"
+output: html_document
+---
+There are two main classes to store samples, `SingleSpeciesSample` and
+`MixedSpeciesSample`, the latter containing the former. 
+
+### Mixed species experiments
+These experiments are important to estimate the number of doublets in the
+samples. The package assumes that a digital gene expression matrix (DGE)
+has already been generated. The human/mouse genes are distinguished by
+the prefix `hg_` and `mm_` respectively. Assuming that the DGE has been
+loaded in `dge.matrix`,
+
+```{r, echo=FALSE, include=FALSE}
+library(dropseq)
+library(data.table)
+dge.matrix=data.frame(fread("zcat < /mydaten/projects/hek3t3/data/ds_013_50fix/dge.txt.gz"), row.names = 1)
+```
+
+```{r}
+# The object containing the sample
+mms <- new("MixedSpeciesSample", species1="human", species2="mouse",
+           dge=dge.matrix)
+```
+
+The number of cells and genes are stored and automatically updated while
+using the functions of `dropbead`
+
+```{r}
+length(mms@cells)
+length(mms@genes)
+```
+
+Calling `classifyCellsAndDoublets` separates the species and returns a `data.frame` with 
+number of transcripts per cell per species. 
+
+```{r}
+head(classifyCellsAndDoublets(mms, threshold = 0.9, min.trans = 300))
+```
+
+The output can be send for plotting
+
+```{r}
+plotCellTypes(classifyCellsAndDoublets(mms))
+```
+
+Number of genes per cell is computed via 
+
+```{r}
+head(computeGenesPerCell(mms, min.reads = 1))
+```
+
+and similarly for transcripts. The user can send the output for plotting 
+
+```{r}
+plotViolin(computeTranscriptsPerCell(mms), attribute = "transcripts")
+```
+
+The functions are polymorphic and can be used for `SingleSpeciesSample` objects.
+Splitting the samples is always performed by internal functions. If the user wants
+to restrict to one species, this is done by 
+
+```{r}
+h <- splitMixedSpeciesSampleToSingleSpecies(mms, threshold = 0.9)[[1]]
+class(h)
+```
+
+which returns a list of two `SingleSpeciesSample` objects. 
+
+### Single species
+
+There are a couple of functions to remove low quality cells and genes, such as
+
+```{r}
+h.f1 <- keepBestCells(h, num.cells = 100)
+h.f2 <- keepBestCells(h, min.num.trans = 1000)
+h.f3 <- removeLowQualityCells(h, min.genes = 2000)
+h.f4 <- removeLowQualityGenes(h, min.cells = 3)
+```
+
+with obvious usage. Other very useful functions are to compare samples against each other,
+or against bulk data when available. For instance,
+
+```{r}
+compareGeneExpressionLevels(h.f1, h.f2)
+compareSingleCellsAgainstBulk(h.f1, log(h.f2@dge[, 1, drop=F]+1))
+```
+
+
+
+
+
+
+
+

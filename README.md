@@ -1,49 +1,21 @@
-# Dropseq - data analysis
-This package contains classes and functions to analyze single cell 
-sequencing data, like those generated through the Dropseq protocol.
-The package is in essence tailored for the needs of Dropseq.
+## dropbead: Basic Exploration and Analysis of Drop-seq Data
 
-There are two main classes: 
-* the `SingleSpeciesSample` contains objects with a `species1`,
-`cells`, `genes` attributes and a `data.frame` representing DGE.
-* the `MixedSpeciesSample` extends the `SingleSpeciesSample`
-class and contains an additional `species2` attribute.
+### About
+This package is created and maintained by Nikolaos Karaiskos.
+It offers a quick and straightfoward way to explore and perform
+basic analysis of single cell sequencing data coming from droplet
+sequencing, such as Drop-seq.
 
-Methods contained in the `SingleSpeciesSample` class:
-* `computeGenesPerCell`.
-* `computeTranscriptsPerCell`.
-* `geneExpressionMean`.
-* `geneExpressionSumUMI`.
-* `geneExpressionDispersion`.
-* `geneExpressionVariability`.
-* `removeLowQualityGenes`, removes genes which are not expressed in
-a minimum number of cells.
-* `removeLowQualityCells`, removes cells which do not express a minimum
-number of genes.
-* `listCellsToCollapse`, returns a list with pairs of cells sharing
-11 bases in their barcodes.
-* `collapseCellsByBarcodes`.
-* `computeCorrelationSingleCellsVersusBulk`, averages over the sample.
-* `computeCorrelationCellToCellVersusBulk`, returns a vector of 
-individual correlations.
-* `compareSingleCellsAgainstBulk`.
-* `compareGeneExpressionLevels`, plots gene expression levels for
-two samples.
+Contact the author in case you've found a bug.
 
-Methods contained in the `MixedSpeciesSample` class (in addition
-to the ones that exist through polymorphism):
-* `splitDgeByGenesOfSpecies`, returns a list of two `data.frames`
-corresponding to genes of each species. All cells are included.
-* `classifyCellsAndDoublets`, returns a `data.frame` with cells,
-counts of transcripts per species and characterization of cell.
-* `splitDgeByGenesAndCellsOfSpecies`, returns a list of two 
-`data.frames` corresponding to genes and cells of each species.
-* `splitMixedSpeciesSampleToSingleSpecies`, returns a list of 
-two `SingleSpeciesSample` objects separating the species.
+Feel free to cite the package in case you've used it.
 
-Plotting methods:
-* `plotViolin` (polymorphic).
-* `plotHistogram` (polymorphic).
-* `plotHistogramCorrelations`, plots histogram of individual correlations.
-* `plotHeatmapCorrelationMatrixDGE`.
-* `plotCellTypes`, plots the separation of species for a `MixedSpeciesSample`.
+### Installation
+The easiest way is to install `dropbead` through `devtools`
+
+```
+library(devtools)
+install_github("rajewsky-lab/dropbead")
+```
+### Tutorial
+A first walkthrough is found in the tutorial.
