@@ -1,13 +1,13 @@
-Package: dropseq
+Package: dropbead
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.15
+Title: dropbead
+Version: 0.2
 Date: 2015-11-14
 Author: Nikolaos Karaiskos
 Maintainer: Nikolaos Karaiskos <nikolaos.karaiskos@mdc-berlin.de>
 Depends: ggplot2, grid, RColorBrewer, gridExtra, gplots, plyr
-Description: Tailored for the purposes of analysing Dropseq data.
-License: What license is it under?
+Description: Basic Exploration and Analysis of Drop-seq Data
+License: GNU GPL3
 Collate: Tools.R DGEMatrix.R SingleSpeciesSample.R MixedSpeciesSample.R plottingMethods.R
 LazyData: TRUE
 NeedsCompilation: no
