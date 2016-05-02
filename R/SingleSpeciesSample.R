@@ -201,7 +201,7 @@ setMethod("computeCellGeneFilteringFromBulk",
             })
 
 setGeneric("assignCellCyclePhases",
-           function(object, do.plot=T) {
+           function(object, do.plot=T, ...) {
              standardGeneric("assignCellCyclePhases")
            })
 setMethod("assignCellCyclePhases",
