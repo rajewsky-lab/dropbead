@@ -1,5 +1,15 @@
 # Functions that act directly on the DGE matrix, represented by a data.frame.
 
+#' Remove cells by barcode
+#'
+setGeneric("removeCells",
+           function(object, cells) {standardGeneric("removeCells")})
+setMethod("removeCells",
+          "data.frame",
+          function(object, cells) {
+            return (object[, !(names(object) %in% cells)])
+          })
+
 #' Filter out low quality cells
 #'
 #' Remove cells expressing less than a minimum of genes (default value is 2000).

@@ -139,6 +139,12 @@ setMethod("computeTranscriptsPerCell",
             return (rbind.fill(lapply(splitMixedSpeciesSampleToSingleSpecies(object, threshold), computeTranscriptsPerCell)))
           })
 
+setMethod("removeCells",
+          "MixedSpeciesSample",
+          function(object, cells) {
+            return (new("MixedSpeciesSample", species1=object@species1, species2=object@species2, dge=removeCells(object@dge, cells)))
+          })
+
 setMethod("removeLowQualityCells",
           "MixedSpeciesSample",
           function(object, min.genes) {

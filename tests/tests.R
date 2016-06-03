@@ -1,16 +1,13 @@
 library(data.table)
-library(dropseq)
+library(dropbead)
 
 # load a DGE to test
-d <- data.frame(fread("zcat < /data/BIO3/home/nkarais/projects/hek3t3/raw/macosko/SpeciesMix_ThousandSTAMPs_50cellspermicroliter/sampled136/dge.txt.gz"), row.names = 1)
+d <- data.frame(fread("zcat < /data/rajewsky/home/nkarais/projects/hek3t3/raw/macosko/SpeciesMix_ThousandSTAMPs_50cellspermicroliter/SRR1748411/subset/dge.txt.gz"), row.names = 1)
 m <- new("MixedSpeciesSample", species1="human", species2="mouse", dge=d)
 sh <- splitMixedSpeciesSampleToSingleSpecies(m, 0.9)[[1]]
 sm <- splitMixedSpeciesSampleToSingleSpecies(m, 0.9)[[2]]
 
-d50 <- data.frame(fread("zcat < /data/BIO3/home/nkarais/Work/@@/dropseq_cell/data/macosko/SpeciesMix_ThousandSTAMPs_50cellspermicroliter/SRR1748411/dge.txt.gz"), row.names = 1)
-m50 <- new("MixedSpeciesSample", species1="human", species2="mouse", dge=d50)
-
-do <- data.frame(fread("zcat < /mydaten/projects/hek3t3/data/ds_009_50/dge.txt.gz"), row.names = 1)
+do <- data.frame(fread("zcat < /mydaten/projects/hek3t3/data/ds_012_50/dge.txt.gz"), row.names = 1)
 mo <- new("MixedSpeciesSample", species1="human", species2="mouse", dge=do)
 sho <- splitMixedSpeciesSampleToSingleSpecies(mo, 0.9)[[1]]
 smo <- splitMixedSpeciesSampleToSingleSpecies(mo, 0.9)[[2]]
@@ -117,5 +114,12 @@ testSplittingMixedToSingleSpecies <- function() {
     print ("Error! Collapsing mouse cells by barcodes is not the same for single and mixed species.")
   }
   }
+
+
+
+
+
+
+
 
 

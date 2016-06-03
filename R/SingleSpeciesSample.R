@@ -44,6 +44,12 @@ setMethod("computeTranscriptsPerCell",
             return (transcripts)
           })
 
+setMethod("removeCells",
+          "SingleSpeciesSample",
+          function(object, cells) {
+            return (new("SingleSpeciesSample", species1=object@species1, dge=removeCells(object@dge, cells)))
+          })
+
 setMethod("removeLowQualityCells",
           "SingleSpeciesSample",
           function(object, min.genes) {
@@ -199,6 +205,48 @@ setMethod("computeCellGeneFilteringFromBulk",
             computeCellGeneFilteringFromBulk(single.cells@dge, bulk.data, log.space, method,
                                              min.cells, max.cells, iteration.steps)
             })
+
+setGeneric("computeMitochondrialPercentage",
+           function(object) {
+             standardGeneric("computeMitochondrialPercentage")
+           })
+setMethod("computeMitochondrialPercentage",
+          "SingleSpeciesSample",
+          function(object) {
+            if (object@species1 == "human") {
+              mt.genes <- object@genes[grep('^MT-', object@genes)]
+            }
+            else if (object@species1 == "mouse") {
+              mt.genes <- object@genes[grep('^mt-', object@genes)]
+            }
+            else if (object@species1 == "melanogaster") {
+              mt.genes <- object@genes[grep('^mt:', object@genes)]
+            }
+
+            return(100*colSums(object@dge[mt.genes, ])/colSums(object@dge))
+          })
+
+setGeneric("plotMitochondrialContent",
+           function(object, log_scale=True, df_names) {
+             standardGeneric("plotMitochondrialContent")
+           })
+setMethod("plotMitochondrialContent",
+          "list",
+          function(object, log_scale, df_names) {
+            object <- lapply(object, as.numeric)
+            mtrx <- matrix(data=NA, nrow = max(sapply(object, length)), ncol = length(object))
+            df <- data.frame(mtrx)
+            names(df) <- df_names
+
+            for (sample in 1:length(object)) {
+              df[1:length(object[[sample]]), sample] <- object[[sample]]
+              }
+
+            g <- (ggplot(melt(df), aes(variable, value)) + geom_violin(fill="grey") + theme_minimal() + plotCommonGrid
+                  + plotCommonTheme + ylab("percentage") + xlab("sample") + geom_boxplot(width = 0.1, outlier.size = 0.5))
+            if (log_scale) {g <- g + scale_y_log10()}
+            return (g)
+          })
 
 setGeneric("assignCellCyclePhases",
            function(object, do.plot=T) {
