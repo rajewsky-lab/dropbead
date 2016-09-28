@@ -1,4 +1,4 @@
-plotCommonTheme <- theme(text = element_text(family = "IPAPMincho", size = 24),
+plotCommonTheme <- theme(text = element_text(family = "NumbusSan", size = 24),
                          axis.title.y = element_text(vjust = 1.2),
                          axis.title.x = element_text(vjust = 0))
 
@@ -17,11 +17,15 @@ setMethod(f = "plotViolin",
           signature = "data.frame",
           function(object, attribute) {
             v <- (ggplot(object, aes_string(x = names(object)[3], y = names(object)[2], fill = names(object)[3]))
-                  + geom_violin() + scale_fill_manual(values = c("steelblue", "firebrick"))
-                  + scale_y_continuous(limits = c(0, max(object[, 2]))) + ylab(paste("Number of", attribute, "per cell"))
+                  + geom_violin()
+                  + scale_fill_grey(start = 0.9, end = 0.5)
+                  # + scale_fill_manual(values = c("steelblue", "firebrick"))
+                  + scale_y_continuous(limits = c(0, max(object[, 2]))) + ylab(paste("Number of", attribute))
                   + xlab("") + geom_boxplot(width = 0.1, outlier.size = 0.5) + guides(fill = F)
-                  + theme_minimal() + plotCommonTheme + plotCommonGrid
-                  + theme(axis.ticks = element_blank())
+                  + theme_minimal() + plotCommonTheme
+                  + theme(axis.ticks = element_blank(),
+                          panel.border = element_rect(colour = "black", fill=NA, size=1),
+                          panel.grid.major = element_blank())
             )
             return (v)
           })
@@ -96,8 +100,8 @@ setMethod(f = "plotCellTypes",
             cell.types.plot <- (ggplot(data = object[object$species != "undefined", ],
                                        aes_string(names(object)[2], names(object)[3], col = names(object)[4]))
                                 + geom_point(size = 4, alpha = 0.4) + theme_classic()
-                                + xlab(paste(names(object)[2], "transcripts"))
-                                + ylab(paste(names(object)[3], "transcripts"))
+                                + xlab(paste(names(object)[2], "transcripts (UMIs)"))
+                                + ylab(paste(names(object)[3], "transcripts (UMIs)"))
                                 + scale_color_manual(values = c("steelblue", "purple", "firebrick"),
                                                      labels = c(paste0(names(object)[2], " (", table(object$species)[names(object)[2]], ")"),
                                                                 paste0("mixed (", table(object$species)['mixed'], ")"),
@@ -106,9 +110,15 @@ setMethod(f = "plotCellTypes",
                                              aes_string(names(object)[2], names(object)[3], col = names(object)[4]),
                                              col = "grey", size = 4, alpha = 0.4)
                                 + plotCommonTheme
+                                + scale_x_continuous(expand=c(0.015, 0), limits = c(0, max(object[2:3])+2500))
+                                + scale_y_continuous(expand=c(0.03, 0), limits = c(0, max(object[2:3])+2500))
                                 + guides(col = guide_legend(override.aes = list(alpha=1)))
                                 + theme(legend.title = element_blank(),
-                                        legend.position = c(0.8, 0.8))
+                                        legend.position = c(0.85, 0.9),
+                                        axis.line.x = element_line(colour = "black"),
+                                        axis.line.y = element_line(colour = "black"),
+                                        plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
+                                        panel.border = element_rect(colour = "black", fill=NA, size=1))
             )
             return(cell.types.plot)
           })
