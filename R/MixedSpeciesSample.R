@@ -240,14 +240,16 @@ setMethod("compareGeneExpressionLevels",
                                         paste0(object1@species2, " (R=", cor.species2, ")"))
 
             comp.plot <- (ggplot(data = big.df, aes(x = sample1, y = sample2))
-                          + xlab(paste0(expression(log2), " transcripts (", name1, ")"))
-                          + ylab(paste0(expression(log2), " transcripts (", name2, ")"))
+                          + xlab(paste0(expression(log2), " UMIs+1 (", name1, ")"))
+                          + ylab(paste0(expression(log2), " UMIs+1 (", name2, ")"))
                           + geom_point(aes(col=species), alpha = 0.5, size = 2)
                           + facet_grid(~ species, labeller = ) + guides(col = F)
-                          + scale_y_continuous(expand=c(0, 0)) + scale_x_continuous(expand=c(0, 0))
+#                          + scale_y_continuous(expand=c(0, 0)) + scale_x_continuous(expand=c(0, 0))
                           + theme_minimal() + plotCommonGrid + plotCommonTheme
-                          + scale_color_manual(values = c("steelblue", "firebrick"))
-                          + theme(axis.ticks.y = element_blank()))
+#                          + scale_color_manual(values = c("steelblue", "firebrick"))
+                          + theme(axis.ticks.y = element_blank(),
+                                  panel.grid.major = element_blank(),
+                                  panel.border = element_rect(colour = "black", fill=NA, size=1)))
 
             return (comp.plot)
           })

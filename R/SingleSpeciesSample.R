@@ -243,13 +243,13 @@ setMethod("plotMitochondrialContent",
               }
 
             g <- (ggplot(melt(df), aes(variable, value)) + geom_violin(fill="grey") + theme_minimal() + plotCommonGrid
-                  + plotCommonTheme + ylab("percentage") + xlab("sample") + geom_boxplot(width = 0.1, outlier.size = 0.5))
+                  + plotCommonTheme + ylab("% of cytoplasmic reads") + xlab("") + geom_boxplot(width = 0.1, outlier.size = 0.5))
             if (log_scale) {g <- g + scale_y_log10()}
             return (g)
           })
 
 setGeneric("assignCellCyclePhases",
-           function(object, gene.file="~/Desktop/things/git/dropseq/data/cell_cycle_genes.xlsx", do.plot=T, ...) {
+           function(object, gene.file="~/Desktop/cell_cycle_genes.xlsx", do.plot=T, ...) {
              standardGeneric("assignCellCyclePhases")
            })
 setMethod("assignCellCyclePhases",
@@ -257,7 +257,7 @@ setMethod("assignCellCyclePhases",
           function(object, gene.file, do.plot) {
             require(xlsx)
             file.ext = gsub(".*\\.(.*)$","\\1", gene.file)
-            
+
 			if (file.ext == "xlsx") {
 				if (object@species1 == "human") {
 					cc_genes <- read.xlsx(gene.file, sheetIndex = 2, stringsAsFactors = F)
@@ -269,7 +269,7 @@ setMethod("assignCellCyclePhases",
 
 			} else if (file.ext == "csv") {
 			    cc_genes = read.table(gene.file, header=T, stringsAsFactors=F, sep=",")
-		    }  
+		    }
 
             g.g1s <- gsub(" ", "", cc_genes$G1.S)
             g.g1s <- g.g1s[!is.na(g.g1s)]
