@@ -60,6 +60,26 @@ setMethod(f = "plotHistogram",
             return (g.sp1)
           })
 
+#' Plots the knee plot
+#'
+#' @param object A \code{data.frame} read from out_readcounts.txt.gz
+setGeneric("plotCumulativeFractionOfReads",
+           function(object, cutoff=10000) {
+             standardGeneric("plotCumulativeFractionOfReads")})
+setMethod("plotCumulativeFractionOfReads",
+          "data.frame",
+          function(object, cutoff) {
+            df <- data.frame("cum"=cumsum(object[1:cutoff, 1])/max(cumsum(object[1:cutoff, 1])),
+                             "cells"=1:cutoff)
+
+            (ggplot(df, aes(cells, cum)) + geom_line(col="steelblue", size=1.25) + theme_minimal()
+            + plotCommonGrid + scale_x_continuous(expand=c(0.015, 0))
+            + scale_y_continuous(expand = c(0.01, 0)) + ylab("cumulative fraction of reads")
+            + xlab("cell barcodes (descending number of reads)")
+            + theme(text=element_text(size=24, family="NumbusSan"),
+                    plot.margin = unit(c(1, 1 , 0.5, 0.5), "cm")))
+          })
+
 setGeneric("plotHistogramCorrelations",
            function(object, xlab="", col="steelblue") {
              standardGeneric("plotHistogramCorrelations")})
