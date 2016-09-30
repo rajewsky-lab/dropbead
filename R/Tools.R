@@ -1,3 +1,24 @@
+#' Merges multiple samples into a big DGE matrix
+#
+setGeneric("mergeMultipleDGEs",
+           function(object) {standardGeneric("mergeMultipleDGEs")})
+setMethod("mergeMultipleDGEs",
+          "list",
+          function(object) {
+            list.of.dge <- list()
+
+            for (sample in 1:length(object)) {
+              list.of.dge[[sample]] <- cbind(object[[sample]]@dge, "genes"=as.character(object[[sample]]@genes))
+            }
+
+            merged.df <- Reduce(function(...) merge(..., by="genes", all=T), list.of.dge)
+            rownames(merged.df) <- merged.df[, 1]
+            merged.df <- merged.df[, 2:dim(merged.df)[2]]
+            merged.df[is.na(merged.df)] <- 0
+            merged.df <- merged.df[order(rownames(merged.df)), ]
+            return (merged.df)
+          })
+
 # Returns n best points of the elbow of a curve
 findElbowOfCurve <- function(x, n) {
   dvec = c()
