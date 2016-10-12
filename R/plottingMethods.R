@@ -17,14 +17,13 @@ setMethod(f = "plotViolin",
           signature = "data.frame",
           function(object, attribute) {
             v <- (ggplot(object, aes_string(x = names(object)[3], y = names(object)[2], fill = names(object)[3]))
-                  + geom_violin()
+                  + geom_violin(size=1)
                   + scale_fill_grey(start = 0.9, end = 0.5)
                   # + scale_fill_manual(values = c("steelblue", "firebrick"))
                   + scale_y_continuous(limits = c(0, max(object[, 2]))) + ylab(paste("Number of", attribute))
-                  + xlab("") + geom_boxplot(width = 0.1, outlier.size = 0.5) + guides(fill = F)
+                  + xlab("") + geom_boxplot(width = 0.3, outlier.size = 0.5) + guides(fill = F)
                   + theme_minimal() + plotCommonTheme
-                  + theme(axis.ticks = element_blank(),
-                          panel.border = element_rect(colour = "black", fill=NA, size=1),
+                  + theme(panel.border = element_rect(colour = "black", fill=NA, size=1),
                           panel.grid.major = element_blank())
             )
             return (v)
@@ -73,11 +72,13 @@ setMethod("plotCumulativeFractionOfReads",
                              "cells"=1:cutoff)
 
             (ggplot(df, aes(cells, cum)) + geom_line(col="steelblue", size=1.25) + theme_minimal()
-            + plotCommonGrid + scale_x_continuous(expand=c(0.015, 0))
+            + scale_x_continuous(expand=c(0.015, 0))
             + scale_y_continuous(expand = c(0.01, 0)) + ylab("cumulative fraction of reads")
             + xlab("cell barcodes (descending number of reads)")
             + theme(text=element_text(size=24, family="NumbusSan"),
-                    plot.margin = unit(c(1, 1 , 0.5, 0.5), "cm")))
+                    plot.margin = unit(c(1, 1 , 0.5, 0.5), "cm"),
+                    panel.border = element_rect(colour = "black", fill=NA, size=1),
+                    panel.grid.major = element_blank()))
           })
 
 setGeneric("plotHistogramCorrelations",

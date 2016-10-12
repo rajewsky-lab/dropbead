@@ -91,23 +91,22 @@ setMethod("geneExpressionDispersion",
           })
 
 setGeneric("computeCorrelationSingleCellsVersusBulk",
-           function(single.cells, bulk.data, measure="umi", method="pearson") {
+           function(single.cells, bulk.data, method="pearson") {
              standardGeneric("computeCorrelationSingleCellsVersusBulk")
            })
 setMethod("computeCorrelationSingleCellsVersusBulk",
           "data.frame",
-          function(single.cells, bulk.data, measure, method) {
+          function(single.cells, bulk.data, method) {
             common.genes <- intersect(rownames(single.cells), rownames(bulk.data))
-            if (measure == "mean") {
-              sc <- geneExpressionMean(single.cells[common.genes, , drop=F])
-            }
-            else {
-              sc <- geneExpressionSumUMI(single.cells[common.genes, , drop=F])
-            }
+            single.cells <- single.cells[common.genes, ]
+            single.cells <- max(colSums(single.cells)) * sweep(single.cells, MARGIN=2,
+                                                               FUN='/', colSums(single.cells))
+            single.cells <- log2(rowSums(single.cells) + 1)
+
             bulk <- bulk.data[common.genes, ]
 
-            df = data.frame("sc"=sc, "bulk"=bulk)
-            correlation = signif(cor(sc, bulk, method=method), 3)
+            df = data.frame("sc"=single.cells, "bulk"=bulk)
+            correlation = signif(cor(single.cells, bulk, method=method), 2)
 
             return (list(correlation, df))
           })
@@ -140,21 +139,27 @@ setMethod("computeCorrelationCellToCellVersusBulk",
 #' @return A scatterplot comparing the gene expression levels and with the correlation
 #' among the samples computed.
 setGeneric("compareSingleCellsAgainstBulk",
-           function(single.cells, bulk.data, measure="umi", method="pearson",
+           function(single.cells, bulk.data, method="pearson",
                     ylab="single cell sample", col="steelblue", ...) {
              standardGeneric("compareSingleCellsAgainstBulk")
            })
 setMethod("compareSingleCellsAgainstBulk",
           "data.frame",
-          function(single.cells, bulk.data, measure, method, ylab, col) {
-            corr = computeCorrelationSingleCellsVersusBulk(single.cells, bulk.data, measure, method)[[1]]
-            df = computeCorrelationSingleCellsVersusBulk(single.cells, bulk.data, measure, method)[[2]]
+          function(single.cells, bulk.data, method, ylab, col) {
+            corr.df <- computeCorrelationSingleCellsVersusBulk(single.cells, bulk.data, method)
+
+            corr = corr.df[[1]]
+            df = corr.df[[2]]
 
             g <- (ggplot(df, aes(x=bulk, y=sc)) + geom_point(col=col, alpha=0.5, size = 3)
-                  + theme_minimal() + plotCommonGrid + plotCommonTheme + ylab(ylab)
+                  + theme_minimal() +  plotCommonTheme + xlab("log2(RPKM+1) [mRNA-seq]")
+                  + ylab(paste0("log2(ATPM+1) [", ylab, "]"))
                   + ggtitle(paste0("R= ", corr)) + scale_x_continuous(expand=c(0.01, 0.02))
-                  + theme(axis.ticks.y = element_blank(),
-                          plot.title = element_text(size=22)) )
+                  + theme(plot.title = element_text(size=22),
+                          text=element_text(size=24, family="NumbusSan"),
+                          plot.margin = unit(c(1, 1 , 0.5, 0.5), "cm"),
+                          panel.border = element_rect(colour = "black", fill=NA, size=1),
+                          panel.grid.major = element_blank()) )
             return (g)
           })
 

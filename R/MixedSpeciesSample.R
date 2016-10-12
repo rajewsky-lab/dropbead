@@ -92,13 +92,18 @@ setGeneric("splitDgeByGenesAndCellsOfSpecies",
 setMethod("splitDgeByGenesAndCellsOfSpecies",
           "MixedSpeciesSample",
           function(object, threshold) {
-            object.species1 <- splitDgeByGenesOfSpecies(object)[[1]]
-            object.species2 <- splitDgeByGenesOfSpecies(object)[[2]]
+            split.dge <- splitDgeByGenesOfSpecies(object)
+
+            object.species1 <- split.dge[[1]]
+            object.species2 <- split.dge[[2]]
 
             df <- classifyCellsAndDoublets(object, threshold)
 
             object.species1 <- object.species1[, df[df$species == object@species1, ]$cell]
             object.species2 <- object.species2[, df[df$species == object@species2, ]$cell]
+
+            object.species1 <- object.species1[which(rowSums(object.species1) != 0), ]
+            object.species2 <- object.species2[which(rowSums(object.species2) != 0), ]
 
             return (list(object.species1, object.species2))
           })
@@ -114,16 +119,17 @@ setGeneric("splitMixedSpeciesSampleToSingleSpecies",
 setMethod("splitMixedSpeciesSampleToSingleSpecies",
           "MixedSpeciesSample",
           function(object, threshold) {
+            splitted.species <- splitDgeByGenesAndCellsOfSpecies(object, threshold)
             s1 <- new("SingleSpeciesSample",
                       species1 = object@species1,
                       cells = object@cells,
-                      genes = rownames(splitDgeByGenesAndCellsOfSpecies(object, threshold)[[1]]),
-                      dge = splitDgeByGenesAndCellsOfSpecies(object, threshold)[[1]])
+                      genes = rownames(splitted.species[[1]]),
+                      dge = splitted.species[[1]])
             s2 <- new("SingleSpeciesSample",
                       species1 = object@species2,
                       cells = object@cells,
-                      genes = rownames(splitDgeByGenesAndCellsOfSpecies(object, threshold)[[2]]),
-                      dge = splitDgeByGenesAndCellsOfSpecies(object, threshold)[[2]])
+                      genes = rownames(splitted.species[[2]]),
+                      dge = splitted.species[[2]])
             return (list(s1, s2))
           })
 
@@ -222,27 +228,31 @@ setMethod("compareGeneExpressionLevels",
             object2.species2 <- object2.species2[row.names(object2.species2) %in% common.genes.species2, ]
 
             big.df <- data.frame("genes" = c(common.genes.species1, common.genes.species2),
-                                 "sample1" = c(log(as.numeric(rowSums(object1.species1))+1, 2),
-                                               log(as.numeric(rowSums(object1.species2))+1, 2)),
-                                 "sample2" = c(log(as.numeric(rowSums(object2.species1))+1, 2),
-                                               log(as.numeric(rowSums(object2.species2))+1, 2)),
+                                 "sample1" = c(log2(10^6 * rowSums(object1.species1)/sum(rowSums(object1.species1))+1),
+                                               log2(10^6 * rowSums(object1.species2)/sum(rowSums(object1.species2))+1)),
+#                                 "sample1" = c(log(as.numeric(rowSums(object1.species1))+1, 2),
+#                                               log(as.numeric(rowSums(object1.species2))+1, 2)),
+                                  "sample2" = c(log2(10^6 * rowSums(object2.species1)/sum(rowSums(object2.species1))+1),
+                                                log2(10^6 * rowSums(object2.species2)/sum(rowSums(object2.species2))+1)),
+#                                 "sample2" = c(log(as.numeric(rowSums(object2.species1))+1, 2),
+#                                               log(as.numeric(rowSums(object2.species2))+1, 2)),
                                  "species" = c(rep(object1@species1, length(common.genes.species1)),
                                                rep(object1@species2, length(common.genes.species2))))
 
             cor.species1 <- signif(cor(big.df$sample1[big.df$species == object1@species1],
                                        big.df$sample2[big.df$species == object1@species1],
-                                       method="spearman"), 2)
+                                       method="pearson"), 2)
             cor.species2 <- signif(cor(big.df$sample1[big.df$species == object1@species2],
                                        big.df$sample2[big.df$species == object1@species2],
-                                       method="spearman"), 2)
+                                       method="pearson"), 2)
 
             levels(big.df$species) <- c(paste0(object1@species1, " (R=", cor.species1, ")"),
                                         paste0(object1@species2, " (R=", cor.species2, ")"))
 
             comp.plot <- (ggplot(data = big.df, aes(x = sample1, y = sample2))
-                          + xlab(paste0(expression(log2), " UMIs+1 (", name1, ")"))
-                          + ylab(paste0(expression(log2), " UMIs+1 (", name2, ")"))
-                          + geom_point(aes(col=species), alpha = 0.5, size = 2)
+                          + xlab(paste0(expression(log2), " (ATMP+1) [", name1, "]"))
+                          + ylab(paste0(expression(log2), " (ATMP+1) [", name2, "]"))
+                          + geom_point(aes(col=species), alpha = 1, size = 2)
                           + facet_grid(~ species, labeller = ) + guides(col = F)
 #                          + scale_y_continuous(expand=c(0, 0)) + scale_x_continuous(expand=c(0, 0))
                           + theme_minimal() + plotCommonGrid + plotCommonTheme
