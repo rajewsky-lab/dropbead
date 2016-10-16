@@ -227,21 +227,25 @@ setMethod("compareGeneExpressionLevels",
             object2.species1 <- object2.species1[row.names(object2.species1) %in% common.genes.species1, ]
             object2.species2 <- object2.species2[row.names(object2.species2) %in% common.genes.species2, ]
 
+            object1.species1 <- max(colSums(object1.species1)) * sweep(object1.species1, MARGIN=2,
+                                                                       FUN='/', colSums(object1.species1))
+            object1.species2 <- max(colSums(object1.species2)) * sweep(object1.species2, MARGIN=2,
+                                                                       FUN='/', colSums(object1.species2))
+            object2.species1 <- max(colSums(object2.species1)) * sweep(object2.species1, MARGIN=2,
+                                                                       FUN='/', colSums(object2.species1))
+            object2.species2 <- max(colSums(object2.species2)) * sweep(object2.species2, MARGIN=2,
+                                                                       FUN='/', colSums(object2.species2))
+
             big.df <- data.frame("genes" = c(common.genes.species1, common.genes.species2),
-                                 "sample1" = c(log2(10^6 * rowSums(object1.species1)/sum(rowSums(object1.species1))+1),
-                                               log2(10^6 * rowSums(object1.species2)/sum(rowSums(object1.species2))+1)),
-#                                 "sample1" = c(log(as.numeric(rowSums(object1.species1))+1, 2),
-#                                               log(as.numeric(rowSums(object1.species2))+1, 2)),
-                                  "sample2" = c(log2(10^6 * rowSums(object2.species1)/sum(rowSums(object2.species1))+1),
-                                                log2(10^6 * rowSums(object2.species2)/sum(rowSums(object2.species2))+1)),
-#                                 "sample2" = c(log(as.numeric(rowSums(object2.species1))+1, 2),
-#                                               log(as.numeric(rowSums(object2.species2))+1, 2)),
+                                 "sample1" = c(log2(rowSums(object1.species1)+1), log2(rowSums(object1.species2)+1)),
+                                 "sample2" = c(log2(rowSums(object2.species1)+1), log2(rowSums(object2.species2)+1)),
                                  "species" = c(rep(object1@species1, length(common.genes.species1)),
                                                rep(object1@species2, length(common.genes.species2))))
 
             cor.species1 <- signif(cor(big.df$sample1[big.df$species == object1@species1],
                                        big.df$sample2[big.df$species == object1@species1],
                                        method="pearson"), 2)
+
             cor.species2 <- signif(cor(big.df$sample1[big.df$species == object1@species2],
                                        big.df$sample2[big.df$species == object1@species2],
                                        method="pearson"), 2)
@@ -250,8 +254,8 @@ setMethod("compareGeneExpressionLevels",
                                         paste0(object1@species2, " (R=", cor.species2, ")"))
 
             comp.plot <- (ggplot(data = big.df, aes(x = sample1, y = sample2))
-                          + xlab(paste0(expression(log2), " (ATMP+1) [", name1, "]"))
-                          + ylab(paste0(expression(log2), " (ATMP+1) [", name2, "]"))
+                          + xlab(paste0(expression(log2), " (ATPM+1) [", name1, "]"))
+                          + ylab(paste0(expression(log2), " (ATPM+1) [", name2, "]"))
                           + geom_point(aes(col=species), alpha = 1, size = 2)
                           + facet_grid(~ species, labeller = ) + guides(col = F)
 #                          + scale_y_continuous(expand=c(0, 0)) + scale_x_continuous(expand=c(0, 0))
