@@ -1,10 +1,10 @@
 Package: dropbead
 Type: Package
 Title: dropbead
-Version: 0.2
+Version: 0.25
 Date: 2015-11-14
-Author: Nikolaos Karaiskos
-Maintainer: Nikolaos Karaiskos <nikolaos.karaiskos@mdc-berlin.de>
+Author: Nikos Karaiskos
+Maintainer: Nikos Karaiskos <nikolaos.karaiskos@mdc-berlin.de>
 Depends: ggplot2, grid, RColorBrewer, gridExtra, gplots, plyr
 Description: Basic Exploration and Analysis of Drop-seq Data
 License: GNU GPL3

@@ -156,7 +156,7 @@ setMethod("compareSingleCellsAgainstBulk",
                   + ylab(paste0("log2(ATPM+1) [", ylab, "]"))
                   + ggtitle(paste0("R= ", corr)) + scale_x_continuous(expand=c(0.01, 0.02))
                   + theme(plot.title = element_text(size=22),
-                          text=element_text(size=24, family="NumbusSan"),
+                          text=element_text(size=24),
                           plot.margin = unit(c(1, 1 , 0.5, 0.5), "cm"),
                           panel.border = element_rect(colour = "black", fill=NA, size=1),
                           panel.grid.major = element_blank()) )
