@@ -1,4 +1,4 @@
-plotCommonTheme <- theme(text = element_text(family = "NumbusSan", size = 24),
+plotCommonTheme <- theme(text = element_text(size = 24),
                          axis.title.y = element_text(vjust = 1.2),
                          axis.title.x = element_text(vjust = 0))
 
@@ -75,7 +75,7 @@ setMethod("plotCumulativeFractionOfReads",
             + scale_x_continuous(expand=c(0.015, 0))
             + scale_y_continuous(expand = c(0.01, 0)) + ylab("cumulative fraction of reads")
             + xlab("cell barcodes (descending number of reads)")
-            + theme(text=element_text(size=24, family="NumbusSan"),
+            + theme(text=element_text(size=24),
                     plot.margin = unit(c(1, 1 , 0.5, 0.5), "cm"),
                     panel.border = element_rect(colour = "black", fill=NA, size=1),
                     panel.grid.major = element_blank()))
