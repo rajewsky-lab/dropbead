@@ -2,6 +2,9 @@
 
 #' Remove cells by barcode
 #'
+#' @param object A \code{data.frame} representing the DGE.
+#' @param cells A character vector of cell barcodes to remove
+#' @return The processed \code{data.frame} is returned.
 setGeneric("removeCells",
            function(object, cells) {standardGeneric("removeCells")})
 setMethod("removeCells",
@@ -24,6 +27,12 @@ setMethod("removeLowQualityCells",
             return (object[, names(object)[colSums(object != 0) >= min.genes]])
           })
 
+#' Keep best cells according to a criterion
+#'
+#' @param object A \code{data.frame} representing the DGE.
+#' @param num.cells The number of cells to keep, ordered by total number of UMIs.
+#' @param min.num.trans Keep only cells with at least this number of UMIs.
+#' @return The processed object.
 setGeneric("keepBestCells",
            function(object, num.cells, min.num.trans=NULL) {standardGeneric("keepBestCells")})
 setMethod("keepBestCells",
@@ -90,6 +99,14 @@ setMethod("geneExpressionDispersion",
             return (log(apply(object, 1, var)/apply(object, 1, mean), 2))
           })
 
+#' Compute gene expression levels correlation of a single cell sample against bulk data
+#'
+#' @param single.cells The single cell object.
+#' @param bulk.data The bulk data formed as a \code{data.frame} with genes as
+#' rownames and RPKM values as the first column.
+#' @param method The method to compute the correlation.
+#' @return A list of length 2. First item is the correlation and second is the
+#' \code{data.frame}.
 setGeneric("computeCorrelationSingleCellsVersusBulk",
            function(single.cells, bulk.data, method="pearson") {
              standardGeneric("computeCorrelationSingleCellsVersusBulk")
@@ -250,5 +267,3 @@ setMethod("identifyDoublets",
 
             return (dge.red)
           })
-
-

@@ -19,13 +19,11 @@ setMethod(f = "plotViolin",
             v <- (ggplot(object, aes_string(x = names(object)[3], y = names(object)[2], fill = names(object)[3]))
                   + geom_violin(size=1)
                   + scale_fill_grey(start = 0.9, end = 0.5)
-                  # + scale_fill_manual(values = c("steelblue", "firebrick"))
                   + scale_y_continuous(limits = c(0, max(object[, 2]))) + ylab(paste("Number of", attribute))
                   + xlab("") + geom_boxplot(width = 0.3, outlier.size = 0.5) + guides(fill = F)
                   + theme_minimal() + plotCommonTheme
                   + theme(panel.border = element_rect(colour = "black", fill=NA, size=1),
-                          panel.grid.major = element_blank())
-            )
+                          panel.grid.major = element_blank()))
             return (v)
           })
 
@@ -93,7 +91,6 @@ setMethod("plotHistogramCorrelations",
             return (g)
           })
 
-
 #' Heatmap of the correlation matrix for pairs of cells.
 #'
 #' @param object A \code{data.frame} representing the DGE matrix.
@@ -106,6 +103,30 @@ setMethod(f = "plotHeatmapCorrelationMatrixDGE",
             heatmap.2(cor(as.matrix(object)), trace = "none", labRow = F,
                       labCol = F, dendrogram = "row", col=heatmap_palette(20))
           })
+
+#' Plot mitochondrial content
+setGeneric("plotMitochondrialContent",
+           function(object, log_scale=True, df_names) {
+             standardGeneric("plotMitochondrialContent")
+           })
+setMethod("plotMitochondrialContent",
+          "list",
+          function(object, log_scale, df_names) {
+            object <- lapply(object, as.numeric)
+            mtrx <- matrix(data=NA, nrow = max(sapply(object, length)), ncol = length(object))
+            df <- data.frame(mtrx)
+            names(df) <- df_names
+
+            for (sample in 1:length(object)) {
+              df[1:length(object[[sample]]), sample] <- object[[sample]]
+            }
+
+            g <- (ggplot(melt(df), aes(variable, value)) + geom_violin(fill="grey") + theme_minimal() + plotCommonGrid
+                  + plotCommonTheme + ylab("% of cytoplasmic reads") + xlab("") + geom_boxplot(width = 0.1, outlier.size = 0.5))
+            if (log_scale) {g <- g + scale_y_log10()}
+            return (g)
+          })
+
 
 #' Plot separation of species
 #'
@@ -139,8 +160,6 @@ setMethod(f = "plotCellTypes",
                                         axis.line.x = element_line(colour = "black"),
                                         axis.line.y = element_line(colour = "black"),
                                         plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),
-                                        panel.border = element_rect(colour = "black", fill=NA, size=1))
-            )
+                                        panel.border = element_rect(colour = "black", fill=NA, size=1)))
             return(cell.types.plot)
           })
-

@@ -136,19 +136,22 @@ setMethod("splitMixedSpeciesSampleToSingleSpecies",
 setMethod("computeGenesPerCell",
           "MixedSpeciesSample",
           function(object, min.reads, threshold=0.9) {
-            return(rbind.fill(lapply(splitMixedSpeciesSampleToSingleSpecies(object, threshold), computeGenesPerCell, min.reads=min.reads)))
+            return(rbind.fill(lapply(splitMixedSpeciesSampleToSingleSpecies(object, threshold),
+                                     computeGenesPerCell, min.reads=min.reads)))
           })
 
 setMethod("computeTranscriptsPerCell",
           "MixedSpeciesSample",
           function(object, threshold=0.9) {
-            return (rbind.fill(lapply(splitMixedSpeciesSampleToSingleSpecies(object, threshold), computeTranscriptsPerCell)))
+            return (rbind.fill(lapply(splitMixedSpeciesSampleToSingleSpecies(object, threshold),
+                                      computeTranscriptsPerCell)))
           })
 
 setMethod("removeCells",
           "MixedSpeciesSample",
           function(object, cells) {
-            return (new("MixedSpeciesSample", species1=object@species1, species2=object@species2, dge=removeCells(object@dge, cells)))
+            return (new("MixedSpeciesSample", species1=object@species1, species2=object@species2,
+                        dge=removeCells(object@dge, cells)))
           })
 
 setMethod("removeLowQualityCells",
@@ -182,7 +185,8 @@ setMethod("removeLowQualityGenes",
 setMethod("listCellsToCollapse",
           "MixedSpeciesSample",
           function (object, threshold=0.9) {
-            return(unlist(lapply(splitMixedSpeciesSampleToSingleSpecies(object, threshold), listCellsToCollapse), recursive = F))
+            return(unlist(lapply(splitMixedSpeciesSampleToSingleSpecies(object, threshold),
+                                 listCellsToCollapse), recursive = F))
           })
 
 setMethod("collapseCellsByBarcode",
@@ -258,14 +262,10 @@ setMethod("compareGeneExpressionLevels",
                           + ylab(paste0(expression(log2), " (ATPM+1) [", name2, "]"))
                           + geom_point(aes(col=species), alpha = 1, size = 2)
                           + facet_grid(~ species, labeller = ) + guides(col = F)
-#                          + scale_y_continuous(expand=c(0, 0)) + scale_x_continuous(expand=c(0, 0))
                           + theme_minimal() + plotCommonGrid + plotCommonTheme
-#                          + scale_color_manual(values = c("steelblue", "firebrick"))
                           + theme(axis.ticks.y = element_blank(),
                                   panel.grid.major = element_blank(),
                                   panel.border = element_rect(colour = "black", fill=NA, size=1)))
 
             return (comp.plot)
           })
-
-
