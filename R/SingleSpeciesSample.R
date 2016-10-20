@@ -205,48 +205,42 @@ setMethod("computeCellGeneFilteringFromBulk",
                                              min.cells, max.cells, iteration.steps)
             })
 
+#' Computes percentage of UMIs coming from mitochondrial encoded RNA.
+#'
+#' @param object A \code{SingleSpeciesSample} object.
+#' @param prefix The prefix of mitochondrial genes.
+#' @return The percentage of mitochondrial encoded RNA UMIs.
 setGeneric("computeMitochondrialPercentage",
-           function(object) {
+           function(object, prefix=NULL) {
              standardGeneric("computeMitochondrialPercentage")
            })
 setMethod("computeMitochondrialPercentage",
           "SingleSpeciesSample",
-          function(object) {
-            if (object@species1 == "human") {
-              mt.genes <- object@genes[grep('^MT-', object@genes)]
+          function(object, prefix) {
+            if (is.null(prefix)) {
+              if (object@species1 == "human") {
+                mt.genes <- object@genes[grep('^MT-', object@genes)]
+              }
+              else if (object@species1 == "mouse") {
+                mt.genes <- object@genes[grep('^mt-', object@genes)]
+              }
+              else if (object@species1 == "melanogaster") {
+                mt.genes <- object@genes[grep('^mt:', object@genes)]
+              }
             }
-            else if (object@species1 == "mouse") {
-              mt.genes <- object@genes[grep('^mt-', object@genes)]
+            else {
+              mt.genes <- object@genes[grep(prefix, object@genes)]
             }
-            else if (object@species1 == "melanogaster") {
-              mt.genes <- object@genes[grep('^mt:', object@genes)]
-            }
-
             return(100*colSums(object@dge[mt.genes, ])/colSums(object@dge))
           })
 
-setGeneric("plotMitochondrialContent",
-           function(object, log_scale=True, df_names) {
-             standardGeneric("plotMitochondrialContent")
-           })
-setMethod("plotMitochondrialContent",
-          "list",
-          function(object, log_scale, df_names) {
-            object <- lapply(object, as.numeric)
-            mtrx <- matrix(data=NA, nrow = max(sapply(object, length)), ncol = length(object))
-            df <- data.frame(mtrx)
-            names(df) <- df_names
-
-            for (sample in 1:length(object)) {
-              df[1:length(object[[sample]]), sample] <- object[[sample]]
-              }
-
-            g <- (ggplot(melt(df), aes(variable, value)) + geom_violin(fill="grey") + theme_minimal() + plotCommonGrid
-                  + plotCommonTheme + ylab("% of cytoplasmic reads") + xlab("") + geom_boxplot(width = 0.1, outlier.size = 0.5))
-            if (log_scale) {g <- g + scale_y_log10()}
-            return (g)
-          })
-
+#' Assigns the cells into the 5 cell cycle phases, following the algorithm described
+#' in Macosko et al. 2015.
+#'
+#' @param object A human or mouse \code{SingleSpeciesSample}.
+#' @param gene.file The excel sheet containing the cell cycle phase specific gene
+#' markers. Taken from Macosko et al. 2015.
+#' @return A \code{data.frame} with cell cycle phase scores for every cell.
 setGeneric("assignCellCyclePhases",
            function(object, gene.file="~/Desktop/cell_cycle_genes.xlsx", do.plot=T, ...) {
              standardGeneric("assignCellCyclePhases")
@@ -257,18 +251,13 @@ setMethod("assignCellCyclePhases",
             require(xlsx)
             file.ext = gsub(".*\\.(.*)$","\\1", gene.file)
 
-			if (file.ext == "xlsx") {
-				if (object@species1 == "human") {
-					cc_genes <- read.xlsx(gene.file, sheetIndex = 2, stringsAsFactors = F)
-				}
+            if (object@species1 == "human") {
+              cc_genes <- read.xlsx(gene.file, sheetIndex = 2, stringsAsFactors = F)
+              }
 
-				if (object@species1 == "mouse") {
-					cc_genes <- read.xlsx(gene.file, sheetIndex = 3, stringsAsFactors = F)
-				}
-
-			} else if (file.ext == "csv") {
-			    cc_genes = read.table(gene.file, header=T, stringsAsFactors=F, sep=",")
-		    }
+            if (object@species1 == "mouse") {
+              cc_genes <- read.xlsx(gene.file, sheetIndex = 3, stringsAsFactors = F)
+              }
 
             g.g1s <- gsub(" ", "", cc_genes$G1.S)
             g.g1s <- g.g1s[!is.na(g.g1s)]
