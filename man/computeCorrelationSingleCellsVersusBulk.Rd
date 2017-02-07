@@ -2,24 +2,26 @@
 % Please edit documentation in R/DGEMatrix.R
 \name{computeCorrelationSingleCellsVersusBulk}
 \alias{computeCorrelationSingleCellsVersusBulk}
-\title{Compute gene expression levels correlation of a single cell sample against bulk data}
+\title{Compare single cell sample against bulk data}
 \usage{
 computeCorrelationSingleCellsVersusBulk(single.cells, bulk.data,
   method = "pearson")
 }
 \arguments{
-\item{single.cells}{The single cell object.}
+\item{single.cells}{The single cell object (could be a DGE or a
+\code{SingleSpeciesSample} object).}
 
 \item{bulk.data}{The bulk data formed as a \code{data.frame} with genes as
 rownames and RPKM values as the first column.}
 
-\item{method}{The method to compute the correlation.}
+\item{method}{The method to compute the correlation (default is Pearson).}
 }
 \value{
 A list of length 2. First item is the correlation and second is the
 \code{data.frame}.
 }
 \description{
-Compute gene expression levels correlation of a single cell sample against bulk data
+Computes correlation of gene expression measurements between a single cell
+sample and bulk data.
 }
 

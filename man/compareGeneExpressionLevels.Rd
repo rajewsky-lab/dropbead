@@ -15,11 +15,14 @@ compareGeneExpressionLevels(object1, object2, name1 = "sample1",
 \item{name1}{The name of the first sample.}
 
 \item{name2}{The name of the second sample.}
+
+\item{method}{The method for computing the correlation.}
 }
 \value{
 A plot comparing the gene expression levels.
 }
 \description{
-Compare gene expression levels between two single species samples
+Computes the averaged sums of the gene expression levels between two
+samples, as well as their correlation.
 }
 

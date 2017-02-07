@@ -13,6 +13,6 @@ computeTranscriptsPerCell(object, ...)
 A \code{data.frame} with cells, transcript counts and species.
 }
 \description{
-Compute transcripts per cell
+Computes the number of transcripts (UMIs) that a cell contains.
 }
 

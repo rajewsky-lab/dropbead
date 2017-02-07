@@ -4,15 +4,21 @@
 \alias{splitDgeByGenesOfSpecies}
 \title{Split DGE by genes of species}
 \usage{
-splitDgeByGenesOfSpecies(object)
+splitDgeByGenesOfSpecies(object, prefix1 = NULL, prefix2 = NULL)
 }
 \arguments{
 \item{object}{A \code{MixedSpeciesSample} object.}
+
+\item{prefix1}{The prefix of the gene names for species1.}
+
+\item{prefix2}{The prefix of the gene names for species2.}
 }
 \value{
 A list of \code{data.frames} corresponding to the genes of the two species.
 }
 \description{
-Split DGE by genes of species
+Splits the DGE of a \code{MixedSpeciesSample} into two \code{SingleSpeciesSample} DGEs.
+The splitting is done by the prefixes of the gene names. If no prefixes are provided
+the defaults are \code{hg_} for human and \code{mm_} for mouse respectively.
 }
 

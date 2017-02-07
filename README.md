@@ -11,7 +11,7 @@ Contact the author in case you've found a bug.
 Feel free to cite the package in case you've used it.
 
 ### Installation
-The easiest way is to install `dropbead` through `devtools`
+The easiest way to install `dropbead` is through `devtools`
 
 ```
 library(devtools)

@@ -16,20 +16,25 @@ setMethod("initialize",
 
 #' Compute genes per cell
 #'
-#' @param object A Single species sample.
+#' Computes the number of genes that a cell expresses.
+#'
+#' @param object A \code{SingleSpeciesSample}.
+#' @param min.umis The minimum number of UMIs to consider the gene as expressed (default is 1).
 #' @return A \code{data.frame} with cells, gene counts and species.
 setGeneric("computeGenesPerCell",
-           function(object, min.reads=2, ...) {standardGeneric("computeGenesPerCell")})
+           function(object, min.umis=1, ...) {standardGeneric("computeGenesPerCell")})
 setMethod("computeGenesPerCell",
           "SingleSpeciesSample",
-          function(object, min.reads) {
-            genes <- data.frame("cells" = names(colSums(object@dge >= min.reads)),
-                                "counts" = as.numeric(colSums(object@dge >= min.reads)),
+          function(object, min.umis) {
+            genes <- data.frame("cells" = names(colSums(object@dge >= min.umis)),
+                                "counts" = as.numeric(colSums(object@dge >= min.umis)),
                                 "species" = object@species1)
             return (genes)
           })
 
 #' Compute transcripts per cell
+#'
+#' Computes the number of transcripts (UMIs) that a cell contains.
 #'
 #' @param object A Single species sample.
 #' @return A \code{data.frame} with cells, transcript counts and species.
@@ -47,13 +52,15 @@ setMethod("computeTranscriptsPerCell",
 setMethod("removeCells",
           "SingleSpeciesSample",
           function(object, cells) {
-            return (new("SingleSpeciesSample", species1=object@species1, dge=removeCells(object@dge, cells)))
+            return (new("SingleSpeciesSample", species1=object@species1,
+                        dge=removeCells(object@dge, cells)))
           })
 
 setMethod("removeLowQualityCells",
           "SingleSpeciesSample",
           function(object, min.genes) {
-            return (new("SingleSpeciesSample", species1=object@species1, dge=removeLowQualityCells(object@dge, min.genes)))
+            return (new("SingleSpeciesSample", species1=object@species1,
+                        dge=removeLowQualityCells(object@dge, min.genes)))
           })
 
 setMethod("keepBestCells",
@@ -66,7 +73,8 @@ setMethod("keepBestCells",
 setMethod("removeLowQualityGenes",
           "SingleSpeciesSample",
           function(object, min.cells) {
-            return (new("SingleSpeciesSample", species1=object@species1, dge=removeLowQualityGenes(object@dge, min.cells)))
+            return (new("SingleSpeciesSample", species1=object@species1,
+                        dge=removeLowQualityGenes(object@dge, min.cells)))
           })
 
 setMethod("geneExpressionMean",
@@ -81,18 +89,14 @@ setMethod("geneExpressionDispersion",
             return (geneExpressionDispersion(object@dge))
           })
 
-setMethod("geneExpressionVariability",
-          "SingleSpeciesSample",
-          function(object, bins, low, do.plot) {
-            return (geneExpressionVariability(object@dge, bins, low, do.plot))
-          })
-
 #' List cells that are candidates for collapsing.
 #'
 #' Identify and list cells which share 11 bases in their barcodes and only the last
-#' one is different. The cells are marked as candidates if and only if they're classified
+#' one is different (usually being N, as a result of the DetectBeadSynthesisErrors
+#' tool). The cells are marked as candidates if and only if they're classified
 #' as belonging to the same species.
-#' @param A \code{SingleSpeciesSample} object.
+#'
+#' @param object A \code{SingleSpeciesSample} object.
 #' @return A list of pairs od candidate cells marked for collapsing.
 setGeneric("listCellsToCollapse",
            function(object, ...) {
@@ -116,7 +120,13 @@ setMethod("listCellsToCollapse",
 
 #' Collapse cells by barcodes similarity
 #'
-#' Collapse cells which have barcodes differing by one mutation on the last base.
+#' Collapse cells which share 11 bases in their barcodes and only the last
+#' one is different (usually being N, as a result of the DetectBeadSynthesisErrors
+#' tool). The cells are marked as candidates if and only if they're classified
+#' as belonging to the same species.
+#'
+#' @param object A \code{SingleSpeciesSample} object.
+#' @return A modified \code{SingleSpeciesSample} object.
 setGeneric("collapseCellsByBarcode",
            function(object, ...) {
              standardGeneric("collapseCellsByBarcode")
@@ -134,18 +144,22 @@ setMethod("collapseCellsByBarcode",
             }
             object@dge <- object@dge[, !names(object@dge) %in% unlist(listOfCells)]
 
-            names(object@dge)[(length(names(object@dge)) -
-                                     length(listOfCells) + 1):length(names(object@dge))] <- unlist(listOfCells)[seq(1, length(unlist(listOfCells)), 2)]
+            names(object@dge)[(length(names(object@dge)) - length(listOfCells)
+                               + 1):length(names(object@dge))] <- unlist(listOfCells)[seq(1, length(unlist(listOfCells)), 2)]
             object@cells <- names(object@dge)
             return (object)
           })
 
 #' Compare gene expression levels between two single species samples
 #'
+#' Computes the averaged sums of the gene expression levels between two
+#' samples, as well as their correlation.
+#'
 #' @param object1 A \code{SingleSpeciesSample} object.
 #' @param object2 A \code{SingleSpeciesSample} object.
 #' @param name1 The name of the first sample.
 #' @param name2 The name of the second sample.
+#' @param method The method for computing the correlation.
 #' @return A plot comparing the gene expression levels.
 setGeneric("compareGeneExpressionLevels",
            function(object1, object2, name1="sample1", name2="sample2",
@@ -161,8 +175,8 @@ setMethod("compareGeneExpressionLevels",
             object2 <- object2@dge[common.genes, ]
 
             big.df <- data.frame("genes" = common.genes,
-                                 "sample1" = log(as.numeric(rowSums(object1))+1, 2),
-                                 "sample2" = log(as.numeric(rowSums(object2))+1, 2))
+                                 "sample1" = log2(as.numeric(rowSums(object1))+1),
+                                 "sample2" = log2(as.numeric(rowSums(object2))+1))
 
             cor <- signif(cor(big.df$sample1, big.df$sample2, method=method), 2)
 
@@ -170,7 +184,8 @@ setMethod("compareGeneExpressionLevels",
                           + ggtitle(paste0("R= ", cor))
                           + xlab(name1) + ylab(name2)
                           + geom_point(col=col, alpha=0.5, size=2)
-                          + scale_y_continuous(expand = c(0.02, 0.02)) + scale_x_continuous(expand = c(0.02, 0.02))
+                          + scale_y_continuous(expand = c(0.02, 0.02))
+                          + scale_x_continuous(expand = c(0.02, 0.02))
                           + theme_minimal() + plotCommonGrid + plotCommonTheme
                           + theme(axis.ticks.y = element_blank()))
 
@@ -180,14 +195,16 @@ setMethod("compareGeneExpressionLevels",
 setMethod("computeCorrelationSingleCellsVersusBulk",
           "SingleSpeciesSample",
           function(single.cells, bulk.data, method) {
-            corr.df <- computeCorrelationSingleCellsVersusBulk(single.cells@dge, bulk.data, method)
+            corr.df <- computeCorrelationSingleCellsVersusBulk(single.cells@dge,
+                                                               bulk.data, method)
             return (list(corr.df[[1]], corr.df[[2]]))
           })
 
 setMethod("computeCorrelationCellToCellVersusBulk",
           "SingleSpeciesSample",
           function(single.cells, bulk.data, measure, method) {
-            return (computeCorrelationCellToCellVersusBulk(single.cells@dge, bulk.data, measure, method))
+            return (computeCorrelationCellToCellVersusBulk(single.cells@dge,
+                                                           bulk.data, measure, method))
           })
 
 setMethod("compareSingleCellsAgainstBulk",
@@ -201,11 +218,15 @@ setMethod("computeCellGeneFilteringFromBulk",
           "SingleSpeciesSample",
           function(single.cells, bulk.data, log.space, method,
                    min.cells, max.cells, iteration.steps) {
-            computeCellGeneFilteringFromBulk(single.cells@dge, bulk.data, log.space, method,
-                                             min.cells, max.cells, iteration.steps)
+            computeCellGeneFilteringFromBulk(single.cells@dge, bulk.data, log.space,
+                                             method, min.cells, max.cells, iteration.steps)
             })
 
-#' Computes percentage of UMIs coming from mitochondrial encoded RNA.
+#' Computes mitochondrial percentage
+#'
+#' Computes the percentageof UMIs coming from mitochondrial encoded RNA. For human,
+#' mouse and melanogaster samples the mitochondrial prefix is hard-coded as \code{MT-},
+#' \code{mt-} and \code{mt:} respectively. An alternative prefix can be also provided.
 #'
 #' @param object A \code{SingleSpeciesSample} object.
 #' @param prefix The prefix of mitochondrial genes.
@@ -234,15 +255,18 @@ setMethod("computeMitochondrialPercentage",
             return(100*colSums(object@dge[mt.genes, ])/colSums(object@dge))
           })
 
+#' Cell cycle assignment
+#'
 #' Assigns the cells into the 5 cell cycle phases, following the algorithm described
-#' in Macosko et al. 2015.
+#' in Macosko et al. 2015. The table of genes is also taken from Macosko et al. 2015.
 #'
 #' @param object A human or mouse \code{SingleSpeciesSample}.
 #' @param gene.file The excel sheet containing the cell cycle phase specific gene
 #' markers. Taken from Macosko et al. 2015.
 #' @return A \code{data.frame} with cell cycle phase scores for every cell.
 setGeneric("assignCellCyclePhases",
-           function(object, gene.file="~/Desktop/cell_cycle_genes.xlsx", do.plot=T, ...) {
+           function(object, gene.file="~/Desktop/cell_cycle_genes.xlsx",
+                    do.plot=T, ...) {
              standardGeneric("assignCellCyclePhases")
            })
 setMethod("assignCellCyclePhases",
@@ -311,7 +335,8 @@ setMethod("assignCellCyclePhases",
 
             heatmap_palette <- colorRampPalette(c("#3794bf", "#FFFFFF", "#cc4140"))
             if (do.plot) {
-              heatmap.2(as.matrix(t(rbind(df1, df2, df3, df4, df5))), trace='none', Rowv=F, Colv=F, dendrogram='none', labCol=F, col=heatmap_palette(10))
+              heatmap.2(as.matrix(t(rbind(df1, df2, df3, df4, df5))), trace='none', Rowv=F, Colv=F,
+                        dendrogram='none', labCol=F, col=heatmap_palette(10))
             }
 
             return(rbind(df1, df2, df3, df4, df5))

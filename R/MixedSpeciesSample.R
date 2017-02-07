@@ -5,7 +5,8 @@ MixedSpeciesSample <- setClass(Class = "MixedSpeciesSample",
 
 setMethod("initialize",
           "MixedSpeciesSample",
-          function (.Object, species1="", species2="", cells=c(), genes=c(), dge=data.frame()) {
+          function (.Object, species1="", species2="", cells=c(), genes=c(),
+                    dge=data.frame()) {
             .Object@species1 = species1
             .Object@species2 = species2
             .Object@cells = names(dge)
@@ -16,22 +17,38 @@ setMethod("initialize",
 
 #' Split DGE by genes of species
 #'
+#' Splits the DGE of a \code{MixedSpeciesSample} into two \code{SingleSpeciesSample} DGEs.
+#' The splitting is done by the prefixes of the gene names. If no prefixes are provided
+#' the defaults are \code{hg_} for human and \code{mm_} for mouse respectively.
+#'
 #' @param object A \code{MixedSpeciesSample} object.
+#' @param prefix1 The prefix of the gene names for species1.
+#' @param prefix2 The prefix of the gene names for species2.
 #' @return A list of \code{data.frames} corresponding to the genes of the two species.
 setGeneric(name = "splitDgeByGenesOfSpecies",
-           def = function(object) {standardGeneric("splitDgeByGenesOfSpecies")})
+           def = function(object, prefix1=NULL, prefix2=NULL) {
+             standardGeneric("splitDgeByGenesOfSpecies")})
 setMethod(f = "splitDgeByGenesOfSpecies",
           signature = "MixedSpeciesSample",
-          function(object) {
-            if (object@species1 == "human" & object@species2 == "mouse") {
-              object.species1 <- object@dge[grep("hg_", object@genes), ]
-              rownames(object.species1) <- gsub("hg_", "", rownames(object.species1))
-              object.species2 <- object@dge[grep("mm_", object@genes), ]
-              rownames(object.species2) <- gsub("mm_", "", rownames(object.species2))
+          function(object, prefix1, prefix2) {
+            if (is.null(prefix1) & is.null(prefix2)) {
+              if (object@species1 == "human" & object@species2 == "mouse") {
+                object.species1 <- object@dge[grep("hg_", object@genes), ]
+                rownames(object.species1) <- gsub("hg_", "", rownames(object.species1))
+                object.species2 <- object@dge[grep("mm_", object@genes), ]
+                rownames(object.species2) <- gsub("mm_", "", rownames(object.species2))
+              }
+              if (object@species1 == "melanogaster" & object@species2 == "virilis") {
+                object.species2 <- object@dge[grep("Dvir_", object@genes), ]
+                object.species1 <- object@dge[setdiff(1:(length(object@genes)),
+                                                      grep("Dvir_", object@genes)), ]
+              }
             }
-            if (object@species1 == "melanogaster" & object@species2 == "virilis") {
-              object.species2 <- object@dge[grep("Dvir_", object@genes), ]
-              object.species1 <- object@dge[setdiff(1:(length(object@genes)), grep("Dvir_", object@genes)), ]
+            else {
+              object.species1 <- object@dge[grep(prefix1, object@genes), ]
+              rownames(object.species1) <- gsub(prefix1, "", rownames(object.species1))
+              object.species2 <- object@dge[grep(prefix2, object@genes), ]
+              rownames(object.species2) <- gsub(prefix2, "", rownames(object.species2))
             }
             return (list(object.species1, object.species2))
           })
@@ -43,14 +60,17 @@ setMethod(f = "splitDgeByGenesOfSpecies",
 #' The differentiation of species is performed internally and according to
 #' the \code{species1} and \code{species2} labels of the sample. If the
 #' classificiation is not confident enough, the cell is characterized as doublet.
+#'
 #' @param object A \code{MixedSpeciesSample} object.
 #' @param threshold The threshold which the ratio of transcripts of one species
 #' over the other has to surpass in order to succesfully assign a cell to a species.
 #' Below that threshold the cell is characterized as a doublet.
+#' @param min.trans The minimum number of transcripts (UMIs) required for a cell.
 #' @return A \code{data.frame} containing the cell barcodes, the number of transcripts
 #' per species and the characterization of the cell.
 setGeneric("classifyCellsAndDoublets",
-           function(object, threshold=0.9, min.trans=300) {standardGeneric("classifyCellsAndDoublets")})
+           function(object, threshold=0.9, min.trans=500) {
+             standardGeneric("classifyCellsAndDoublets")})
 setMethod("classifyCellsAndDoublets",
           "MixedSpeciesSample",
           function(object, threshold, min.trans) {
@@ -88,7 +108,8 @@ setMethod("classifyCellsAndDoublets",
 #' over the other has to surpass in order to succesfully assign a cell to a species.
 #' @return A list \code{data.frames} representing the DGEs for each species.
 setGeneric("splitDgeByGenesAndCellsOfSpecies",
-           function(object, threshold=0.9) {standardGeneric("splitDgeByGenesAndCellsOfSpecies")})
+           function(object, threshold=0.9) {
+             standardGeneric("splitDgeByGenesAndCellsOfSpecies")})
 setMethod("splitDgeByGenesAndCellsOfSpecies",
           "MixedSpeciesSample",
           function(object, threshold) {
@@ -115,7 +136,8 @@ setMethod("splitDgeByGenesAndCellsOfSpecies",
 #' over the other has to surpass in order to succesfully assign a cell to a species.
 #' @return A list of two \code{SingleSpeciesSample} objects.
 setGeneric("splitMixedSpeciesSampleToSingleSpecies",
-           function(object, threshold=0.9) {standardGeneric("splitMixedSpeciesSampleToSingleSpecies")})
+           function(object, threshold=0.9) {
+             standardGeneric("splitMixedSpeciesSampleToSingleSpecies")})
 setMethod("splitMixedSpeciesSampleToSingleSpecies",
           "MixedSpeciesSample",
           function(object, threshold) {
@@ -135,9 +157,9 @@ setMethod("splitMixedSpeciesSampleToSingleSpecies",
 
 setMethod("computeGenesPerCell",
           "MixedSpeciesSample",
-          function(object, min.reads, threshold=0.9) {
+          function(object, min.umis, threshold=0.9) {
             return(rbind.fill(lapply(splitMixedSpeciesSampleToSingleSpecies(object, threshold),
-                                     computeGenesPerCell, min.reads=min.reads)))
+                                     computeGenesPerCell, min.umis=min.umis)))
           })
 
 setMethod("computeTranscriptsPerCell",
@@ -175,7 +197,6 @@ setMethod("removeLowQualityGenes",
                         dge=removeLowQualityGenes(object@dge, min.cells)))
           })
 
-
 #' List cells that are candidates for collapsing.
 #'
 #' Identify and list cells which share 11 bases in their barcodes and only the last
@@ -202,8 +223,8 @@ setMethod("collapseCellsByBarcode",
             }
             object@dge <- object@dge[, !names(object@dge) %in% unlist(listOfCells)]
 
-            names(object@dge)[(length(names(object@dge)) -
-                                     length(listOfCells) + 1):length(names(object@dge))] <- unlist(listOfCells)[seq(1, length(unlist(listOfCells)), 2)]
+            names(object@dge)[(length(names(object@dge)) - length(listOfCells)
+                               + 1):length(names(object@dge))] <- unlist(listOfCells)[seq(1, length(unlist(listOfCells)), 2)]
             object@cells <- names(object@dge)
             return (object)
           })
@@ -241,8 +262,10 @@ setMethod("compareGeneExpressionLevels",
                                                                        FUN='/', colSums(object2.species2))
 
             big.df <- data.frame("genes" = c(common.genes.species1, common.genes.species2),
-                                 "sample1" = c(log2(rowSums(object1.species1)+1), log2(rowSums(object1.species2)+1)),
-                                 "sample2" = c(log2(rowSums(object2.species1)+1), log2(rowSums(object2.species2)+1)),
+                                 "sample1" = c(log2(rowSums(object1.species1)+1),
+                                               log2(rowSums(object1.species2)+1)),
+                                 "sample2" = c(log2(rowSums(object2.species1)+1),
+                                               log2(rowSums(object2.species2)+1)),
                                  "species" = c(rep(object1@species1, length(common.genes.species1)),
                                                rep(object1@species2, length(common.genes.species2))))
 

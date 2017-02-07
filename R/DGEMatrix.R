@@ -1,9 +1,11 @@
-# Functions that act directly on the DGE matrix, represented by a data.frame.
+# Functions applied directly on the DGE matrix, represented by a data.frame.
 
 #' Remove cells by barcode
 #'
+#' Removes the provided cells from the sample.
+#'
 #' @param object A \code{data.frame} representing the DGE.
-#' @param cells A character vector of cell barcodes to remove
+#' @param cells A character vector of cell barcodes to remove.
 #' @return The processed \code{data.frame} is returned.
 setGeneric("removeCells",
            function(object, cells) {standardGeneric("removeCells")})
@@ -15,7 +17,8 @@ setMethod("removeCells",
 
 #' Filter out low quality cells
 #'
-#' Remove cells expressing less than a minimum of genes (default value is 2000).
+#' Removes cells expressing less than a minimum of genes (default value is 1000).
+#'
 #' @param object A \code{data.frame} representing DGE.
 #' @param n The minimum number of genes required.
 #' @return A \code{data.frame} without the low quality cells.
@@ -28,6 +31,9 @@ setMethod("removeLowQualityCells",
           })
 
 #' Keep best cells according to a criterion
+#'
+#' Subsets the sample by keeping the top n cells, or the cells with a minimum number
+#' of UMIs.
 #'
 #' @param object A \code{data.frame} representing the DGE.
 #' @param num.cells The number of cells to keep, ordered by total number of UMIs.
@@ -50,7 +56,9 @@ setMethod("keepBestCells",
 
 #' Filter out low quality genes
 #'
-#' Remove genes which are expressed in less than a minimum number of cells.
+#' Removes genes which are expressed in less than a minimum number of cells
+#' (default is 3).
+#'
 #' @param object A \code{data.frame} representing DGE.
 #' @param n The minimum number of cells.
 #' @return A \code{data.frame} without the low quality genes.
@@ -84,7 +92,7 @@ setGeneric("geneExpressionSumUMI",
 setMethod("geneExpressionSumUMI",
           "data.frame",
           function(object) {
-            return (log(rowSums(object)+1, 2))
+            return (log2(rowSums(object)+1))
           })
 
 #' Compute the dispersion of each gene across all cells.
@@ -99,12 +107,16 @@ setMethod("geneExpressionDispersion",
             return (log(apply(object, 1, var)/apply(object, 1, mean), 2))
           })
 
-#' Compute gene expression levels correlation of a single cell sample against bulk data
+#' Compare single cell sample against bulk data
 #'
-#' @param single.cells The single cell object.
+#' Computes correlation of gene expression measurements between a single cell
+#' sample and bulk data.
+#'
+#' @param single.cells The single cell object (could be a DGE or a
+#' \code{SingleSpeciesSample} object).
 #' @param bulk.data The bulk data formed as a \code{data.frame} with genes as
 #' rownames and RPKM values as the first column.
-#' @param method The method to compute the correlation.
+#' @param method The method to compute the correlation (default is Pearson).
 #' @return A list of length 2. First item is the correlation and second is the
 #' \code{data.frame}.
 setGeneric("computeCorrelationSingleCellsVersusBulk",
@@ -144,7 +156,9 @@ setMethod("computeCorrelationCellToCellVersusBulk",
             return (vectorOfCorrelations)
           })
 
-#' Compare average gene expression from single cell data against bulk data.
+#' Compare gene expression between single cell sample and bulk
+#'
+#' Compares the gene expression measurements from single cell data against bulk data.
 #'
 #' @param single.cells A \code{data.frame} containing genes as rownames and columns as cells.
 #' @param bulk.data A \code{data.frame} containing genes as rownames and a single column
@@ -209,61 +223,4 @@ setMethod("computeCellGeneFilteringFromBulk",
                      + theme_minimal() + plotCommonGrid + plotCommonTheme)
               return(grid.arrange(g1, g2, ncol=2))
             }
-          })
-
-#' Gene variability
-#'
-#' Compute the variability of each gene across all cells. The average expression
-#' of each gene is first computed, sorted and the genes are placed into \code{b}
-#' bins. The dispersion of genes into each bin is then z-normalized. A cuttoff
-#' is then used to identify the top \code{h} highly variable genes. Genes with 0
-#' mean expression should be removed before using this function. Computation
-#' is performed in log space.
-#'
-#' @param object A \code{data.frame} representing DGE.
-#' @param bins The number of bins.
-#' @return A vector of the top highly varied genes.
-setGeneric("geneExpressionVariability",
-           function (object, bins=20, low=F, do.plot=F) {standardGeneric("geneExpressionVariability")})
-setMethod("geneExpressionVariability",
-          "data.frame",
-          function(object, bins, low, do.plot) {
-            x = geneExpressionMean(object)
-            y = geneExpressionDispersion(object)
-            x.bins = cut(x, bins)
-            names(x.bins) = names(x)
-            y.mean = tapply(y, x.bins, mean)
-            y.sd = tapply(y, x.bins, sd)
-            ret = (y - y.mean[as.numeric(x.bins)])/y.sd[as.numeric(x.bins)]
-            names(ret) = names(x)
-            high.var <- intersect(names(ret[ret > 2/log(2) & ret < 12]), names(x[x > 2]))
-            low.var <- c()
-
-            if (do.plot) {
-              plot(x, ret, pch=19, cex=0.3)
-              points(x[high.var], ret[high.var], pch=19, cex=0.5, col = 'red')
-            }
-            if (low) {
-              return (low.var)
-            }
-            return (high.var)
-          })
-
-#' Identify doublets
-#'
-#' Subsets the DGE matrix to genes which are highly expressed and at the
-#' same time lowly varied across all cells. Comparing the cells then probabilities
-#' are assigned for each cell to be a doublet of the same species.
-#' @param object A \code{data.frame} representing DGE.0
-#' @return A \code{vector} containing the assigned probabilities for each cell.
-setGeneric("identifyDoublets",
-           function(object) {standardGeneric("identifyDoublets")})
-setMethod("identifyDoublets",
-          "data.frame",
-          function(object) {
-            lv.genes <- geneExpressionVariability(object, low=TRUE)
-            c.genes <- intersect(names(tail(sort(geneExpressionMean(object)), length(lv.genes))), names(lv.genes))
-            dge.red <- object[c.genes, ]
-
-            return (dge.red)
           })

@@ -4,9 +4,18 @@
 \alias{plotMitochondrialContent}
 \title{Plot mitochondrial content}
 \usage{
-plotMitochondrialContent(object, log_scale = True, df_names)
+plotMitochondrialContent(object, log_scale = TRUE,
+  sample_names = paste0("sample", 1:length(object)))
+}
+\arguments{
+\item{object}{A list of mitochondrial content percentages, as computed by the
+\code{ComputeMitochondrialContent} function.}
+
+\item{log_scale}{Should the y-axis be in the log-scale?}
+
+\item{sample_names}{The sample names}
 }
 \description{
-Plot mitochondrial content
+Violin plots of mitochondrial content of one or more samples.
 }
 

@@ -1,5 +1,8 @@
 #' Merges multiple samples into a big DGE matrix
 #'
+#' Merges the DGEs of multiple samples into a big one that can be used for
+#' further analysis.
+#'
 #' @param object A \code{list} of DGEs.
 #' @return A \code{data.frame} containing all DGEs merged.
 setGeneric("mergeMultipleDGEs",
@@ -10,10 +13,12 @@ setMethod("mergeMultipleDGEs",
             list.of.dge <- list()
 
             for (sample in 1:length(object)) {
-              list.of.dge[[sample]] <- cbind(object[[sample]]@dge, "genes"=as.character(object[[sample]]@genes))
+              list.of.dge[[sample]] <- cbind(object[[sample]]@dge,
+                                             "genes"=as.character(object[[sample]]@genes))
             }
 
-            merged.df <- Reduce(function(...) merge(..., by="genes", all=T), list.of.dge)
+            merged.df <- Reduce(function(...) merge(..., by="genes", all=T),
+                                list.of.dge)
             rownames(merged.df) <- merged.df[, 1]
             merged.df <- merged.df[, 2:dim(merged.df)[2]]
             merged.df[is.na(merged.df)] <- 0
@@ -23,12 +28,20 @@ setMethod("mergeMultipleDGEs",
 
 #' Computes the inflection point / cell number.
 #'
-#' @param object A vector containing the reads per cell as given by the Drop-seq pipeline (BAMTagHistogram).
-#' @param max.cells The number of cells to consider as an upper bound and to compute the inflection point.
-#' @param n The nubmer of inflection points to return.
+#' Computes an inflection point (a.k.a. knee point, elbow of curve) of curve.
+#' Can be used to compute the number of STAMPS that are present in the data
+#' (see Drop-seq computational cookbook for further details).
+#'
+#' @param object A vector containing the reads per cell as given by the Drop-seq
+#' pipeline (BAMTagHistogram).
+#' @param max.cells The number of cells to consider as an upper bound and to
+#' compute the inflection point (default is 10000).
+#' @param n The nubmer of inflection points to return (default is 1).
 #' @return The cell number.
 setGeneric("findInflectionPoint",
-           function(object, max.cells=10000, n=1) {standardGeneric("findInflectionPoint")})
+           function(object, max.cells=10000, n=1) {
+             standardGeneric("findInflectionPoint")
+             })
 setMethod("findInflectionPoint",
           "numeric",
           function(object, max.cells, n) {

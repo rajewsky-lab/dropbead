@@ -13,6 +13,7 @@ mergeMultipleDGEs(object)
 A \code{data.frame} containing all DGEs merged.
 }
 \description{
-Merges multiple samples into a big DGE matrix
+Merges the DGEs of multiple samples into a big one that can be used for
+further analysis.
 }
 
