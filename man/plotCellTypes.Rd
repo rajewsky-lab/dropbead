@@ -11,7 +11,7 @@ plotCellTypes(object)
 function.}
 }
 \description{
-Scatter plot of all cells by transcripts of species. Species and doublets
-separated by different colors.
+Scatter plot of all cells by transcripts of species (a.k.a. barnyard plot). Species
+and doublets are separated by different colors.
 }
 

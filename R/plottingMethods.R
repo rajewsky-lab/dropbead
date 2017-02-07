@@ -16,11 +16,13 @@ setGeneric(name = "plotViolin",
 setMethod(f = "plotViolin",
           signature = "data.frame",
           function(object, attribute) {
-            v <- (ggplot(object, aes_string(x = names(object)[3], y = names(object)[2], fill = names(object)[3]))
+            v <- (ggplot(object, aes_string(x = names(object)[3], y = names(object)[2],
+                                            fill = names(object)[3]))
                   + geom_violin(size=1)
                   + scale_fill_grey(start = 0.9, end = 0.5)
-                  + scale_y_continuous(limits = c(0, max(object[, 2]))) + ylab(paste("Number of", attribute))
-                  + xlab("") + geom_boxplot(width = 0.3, outlier.size = 0.5) + guides(fill = F)
+                  + scale_y_continuous(limits = c(0, max(object[, 2])))
+                  + ylab(paste("Number of", attribute)) + xlab("")
+                  + geom_boxplot(width = 0.3, outlier.size = 0.5) + guides(fill = F)
                   + theme_minimal() + plotCommonTheme
                   + theme(panel.border = element_rect(colour = "black", fill=NA, size=1),
                           panel.grid.major = element_blank()))
@@ -59,24 +61,39 @@ setMethod(f = "plotHistogram",
 
 #' Plots the knee plot
 #'
+#' Plots the cumulative fraction of reads against cell barcodes (in descending
+#' number of reads). This way provides a heuristic computation of the number of
+#' STAMPS in the sample (see computational cookbook from Macosko et. al. 2015
+#' for further details and reasoning).
+#'
 #' @param object A \code{data.frame} read from out_readcounts.txt.gz
+#' @param cutoff The number of cells to take into account (default is 10000).
+#' @param draw.infl.point Whether to annotate the inflation point or not.
 setGeneric("plotCumulativeFractionOfReads",
-           function(object, cutoff=10000) {
+           function(object, cutoff=10000, draw.infl.point=TRUE) {
              standardGeneric("plotCumulativeFractionOfReads")})
 setMethod("plotCumulativeFractionOfReads",
           "data.frame",
-          function(object, cutoff) {
+          function(object, cutoff, draw.infl.point) {
             df <- data.frame("cum"=cumsum(object[1:cutoff, 1])/max(cumsum(object[1:cutoff, 1])),
                              "cells"=1:cutoff)
 
-            (ggplot(df, aes(cells, cum)) + geom_line(col="steelblue", size=1.25) + theme_minimal()
+            infl.point <- findInflectionPoint(object[1:cutoff, 1], max.cells=cutoff, n=1)
+
+            g <- (ggplot(df, aes(cells, cum)) + geom_line(col="steelblue", size=1.25) + theme_minimal()
             + scale_x_continuous(expand=c(0.015, 0))
-            + scale_y_continuous(expand = c(0.01, 0)) + ylab("cumulative fraction of reads")
-            + xlab("cell barcodes (descending number of reads)")
+            + scale_y_continuous(expand = c(0.01, 0)) + ylab("Cumulative fraction of reads")
+            + xlab("Cell barcodes (descending number of reads)")
             + theme(text=element_text(size=24),
                     plot.margin = unit(c(1, 1 , 0.5, 0.5), "cm"),
                     panel.border = element_rect(colour = "black", fill=NA, size=1),
                     panel.grid.major = element_blank()))
+            if (draw.infl.point) {
+              g <- (g + geom_vline(xintercept = infl.point, col='red', size=1)
+                    + ggtitle(paste0('Number of STAMPS: ', infl.point))
+                    + theme(title = element_text(size=16)))
+            }
+            return (g)
           })
 
 setGeneric("plotHistogramCorrelations",
@@ -105,33 +122,42 @@ setMethod(f = "plotHeatmapCorrelationMatrixDGE",
           })
 
 #' Plot mitochondrial content
+#'
+#' Violin plots of mitochondrial content of one or more samples.
+#'
+#' @param object A list of mitochondrial content percentages, as computed by the
+#' \code{ComputeMitochondrialContent} function.
+#' @param log_scale Should the y-axis be in the log-scale?
+#' @param sample_names The sample names
 setGeneric("plotMitochondrialContent",
-           function(object, log_scale=True, df_names) {
+           function(object, log_scale=TRUE, sample_names=paste0('sample', 1:length(object))) {
              standardGeneric("plotMitochondrialContent")
            })
 setMethod("plotMitochondrialContent",
           "list",
-          function(object, log_scale, df_names) {
+          function(object, log_scale, sample_names) {
             object <- lapply(object, as.numeric)
             mtrx <- matrix(data=NA, nrow = max(sapply(object, length)), ncol = length(object))
             df <- data.frame(mtrx)
-            names(df) <- df_names
+            names(df) <- sample_names
 
             for (sample in 1:length(object)) {
               df[1:length(object[[sample]]), sample] <- object[[sample]]
             }
 
-            g <- (ggplot(melt(df), aes(variable, value)) + geom_violin(fill="grey") + theme_minimal() + plotCommonGrid
-                  + plotCommonTheme + ylab("% of cytoplasmic reads") + xlab("") + geom_boxplot(width = 0.1, outlier.size = 0.5))
+            g <- (ggplot(melt(df), aes(variable, value)) + geom_violin(fill="grey")
+                  + ylab("% of cytoplasmic reads") + xlab("") + theme_minimal()
+                  + plotCommonTheme + plotCommonGrid
+                  + geom_boxplot(width = 0.1, outlier.size = 0.5))
             if (log_scale) {g <- g + scale_y_log10()}
             return (g)
           })
 
-
 #' Plot separation of species
 #'
-#' Scatter plot of all cells by transcripts of species. Species and doublets
-#' separated by different colors.
+#' Scatter plot of all cells by transcripts of species (a.k.a. barnyard plot). Species
+#' and doublets are separated by different colors.
+#'
 #' @param object A \code{data.frame} produced by the \code{classifyCellsAndDoublets}
 #' function.
 setGeneric(name = "plotCellTypes",
@@ -139,24 +165,25 @@ setGeneric(name = "plotCellTypes",
 setMethod(f = "plotCellTypes",
           signature = "data.frame",
           function(object) {
-            cell.types.plot <- (ggplot(data = object[object$species != "undefined", ],
-                                       aes_string(names(object)[2], names(object)[3], col = names(object)[4]))
+            cell.types.plot <- (ggplot(data = object, aes_string(names(object)[2], names(object)[3],
+                                                                 col = names(object)[4]))
                                 + geom_point(size = 4, alpha = 0.4) + theme_classic()
                                 + xlab(paste(names(object)[2], "transcripts (UMIs)"))
                                 + ylab(paste(names(object)[3], "transcripts (UMIs)"))
-                                + scale_color_manual(values = c("steelblue", "purple", "firebrick"),
-                                                     labels = c(paste0(names(object)[2], " (", table(object$species)[names(object)[2]], ")"),
+                                + scale_color_manual(values = c("steelblue", "purple", "firebrick", "grey"),
+                                                     labels = c(paste0(names(object)[2], " (",
+                                                                       table(object$species)[names(object)[2]], ")"),
                                                                 paste0("mixed (", table(object$species)['mixed'], ")"),
-                                                                paste0(names(object)[3], " (", table(object$species)[names(object)[3]], ")")))
-                                + geom_point(data = object[object$species == "undefined", ],
-                                             aes_string(names(object)[2], names(object)[3], col = names(object)[4]),
-                                             col = "grey", size = 4, alpha = 0.4)
+                                                                paste0(names(object)[3], " (",
+                                                                       table(object$species)[names(object)[3]], ")"),
+                                                                paste0("low UMIs", " (",
+                                                                       table(object$species)['undefined'], ")")))
                                 + plotCommonTheme
                                 + scale_x_continuous(expand=c(0.015, 0), limits = c(0, max(object[2:3])+2500))
                                 + scale_y_continuous(expand=c(0.03, 0), limits = c(0, max(object[2:3])+2500))
                                 + guides(col = guide_legend(override.aes = list(alpha=1)))
                                 + theme(legend.title = element_blank(),
-                                        legend.position = c(0.85, 0.9),
+                                        legend.position = c(0.85, 0.85),
                                         axis.line.x = element_line(colour = "black"),
                                         axis.line.y = element_line(colour = "black"),
                                         plot.margin = unit(c(0.5, 0.5, 0.5, 0.5), "cm"),

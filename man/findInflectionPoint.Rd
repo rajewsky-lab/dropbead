@@ -7,16 +7,20 @@
 findInflectionPoint(object, max.cells = 10000, n = 1)
 }
 \arguments{
-\item{object}{A vector containing the reads per cell as given by the Drop-seq pipeline (BAMTagHistogram).}
+\item{object}{A vector containing the reads per cell as given by the Drop-seq
+pipeline (BAMTagHistogram).}
 
-\item{max.cells}{The number of cells to consider as an upper bound and to compute the inflection point.}
+\item{max.cells}{The number of cells to consider as an upper bound and to
+compute the inflection point (default is 10000).}
 
-\item{n}{The nubmer of inflection points to return.}
+\item{n}{The nubmer of inflection points to return (default is 1).}
 }
 \value{
 The cell number.
 }
 \description{
-Computes the inflection point / cell number.
+Computes an inflection point (a.k.a. knee point, elbow of curve) of curve.
+Can be used to compute the number of STAMPS that are present in the data
+(see Drop-seq computational cookbook for further details).
 }
 

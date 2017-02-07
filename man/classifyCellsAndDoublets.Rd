@@ -4,7 +4,7 @@
 \alias{classifyCellsAndDoublets}
 \title{Classify cells to species}
 \usage{
-classifyCellsAndDoublets(object, threshold = 0.9, min.trans = 300)
+classifyCellsAndDoublets(object, threshold = 0.9, min.trans = 500)
 }
 \arguments{
 \item{object}{A \code{MixedSpeciesSample} object.}
@@ -12,6 +12,8 @@ classifyCellsAndDoublets(object, threshold = 0.9, min.trans = 300)
 \item{threshold}{The threshold which the ratio of transcripts of one species
 over the other has to surpass in order to succesfully assign a cell to a species.
 Below that threshold the cell is characterized as a doublet.}
+
+\item{min.trans}{The minimum number of transcripts (UMIs) required for a cell.}
 }
 \value{
 A \code{data.frame} containing the cell barcodes, the number of transcripts

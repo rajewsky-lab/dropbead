@@ -1,98 +1,178 @@
 ---
-title: "dropbead tutorial"
-author: "NIkolaos Karaiskos"
-date: "21 Apr 2016"
+title: "Dropbead tutorial"
+author: "Nikos Karaiskos"
+date: "07 Feb 2017"
 output: html_document
 ---
-There are two main classes to store samples, `SingleSpeciesSample` and
-`MixedSpeciesSample`, the latter containing the former. 
 
-### Mixed species experiments
-These experiments are important to estimate the number of doublets in the
-samples. The package assumes that a digital gene expression matrix (DGE)
-has already been generated. The human/mouse genes are distinguished by
-the prefix `hg_` and `mm_` respectively. Assuming that the DGE has been
-loaded in `dge.matrix`,
+## Knee plot and the number of cells
+Dropbead provides a function to computationally estimate the number of cells
+present in the sample, by calculating the inflection point of the cumulative
+fraction of reads against the cell barcodes. Assuming that `reads.by.cell` 
+is the `data.frame` with the reads per cell (the output of `BAMTagHistogram`
+from the Drop-seq toolkit), 
 
 ```{r, echo=FALSE, include=FALSE}
-library(dropseq)
+library(dropbead)
 library(data.table)
+library(xlsx)
+library(rJava)
+library(xlsxjars)
+reads.by.cell <- data.frame(fread('zcat < /mydaten/projects/hek3t3/data/ds_013_50fix/out_readcounts.txt.gz'))
 dge.matrix=data.frame(fread("zcat < /mydaten/projects/hek3t3/data/ds_013_50fix/dge.txt.gz"), row.names = 1)
 ```
 
 ```{r}
+plotCumulativeFractionOfReads(reads.by.cell, 
+                              cutoff = 10000, 
+                              draw.infl.point = TRUE)
+```
+
+
+# Mixed species experiments
+Dropbead offers two main classes to store samples, the `SingleSpeciesSample` 
+class and the `MixedSpeciesSample` class, the latter containing the former.
+
+Mixed species experiments are important to estimate the number of doublets in 
+the samples. Dropbead assumes that a digital gene expression matrix (DGE)
+has already been generated and the genes for the two species are separated
+by a prefix. For mixed human/mouse samples the prefixes are `hg_` and `mm_` 
+respectively. Assuming that the DGE has been loaded in `dge.matrix`,
+
+```{r}
 # The object containing the sample
-mms <- new("MixedSpeciesSample", species1="human", species2="mouse",
+mms <- new("MixedSpeciesSample", 
+           species1="human", 
+           species2="mouse",
            dge=dge.matrix)
 ```
 
 The number of cells and genes are stored and automatically updated while
-using the functions of `dropbead`
+using `dropbead`'s functions
+
+```{r}
+length(mms@cells) # number of cells in the sample
+length(mms@genes) # number of genes detected
+```
+
+Some of the barcodes might correspond to the same cells (essentially after
+using the `DetectBeadSynthesisErrors` Drop-seq tool) and have to be collapsed.
+Such cells are identified by
+
+```{r}
+listCellsToCollapse(mms)
+```
+
+In the example above there are 5 pairs of cells which need to be collapsed.
+This is straightforward with using
+
+```{r}
+mms <- collapseCellsByBarcode(mms)
+```
+
+We can verify that the number of cells is now the correct one
 
 ```{r}
 length(mms@cells)
-length(mms@genes)
 ```
+
+## Handling mixed species samples
 
 Calling `classifyCellsAndDoublets` separates the species and returns a `data.frame` with 
-number of transcripts per cell per species. 
+number of transcripts per cell per species. The `threshold` controls the purity of the 
+resulting cells, while `min.trans` is the minimum number of UMIs required to keep a cell.
 
 ```{r}
-head(classifyCellsAndDoublets(mms, threshold = 0.9, min.trans = 300))
+head(classifyCellsAndDoublets(mms, 
+                              threshold = 0.9, 
+                              min.trans = 1000))
 ```
 
-The output can be send for plotting
+The output of `classifyCellsAndDoublets` can be directly send for plotting
 
-```{r}
-plotCellTypes(classifyCellsAndDoublets(mms))
+```{r, fig.width=10, fig.height=7.1}
+plotCellTypes(classifyCellsAndDoublets(mms, threshold = 0.9, min.trans = 5000))
 ```
 
-Number of genes per cell is computed via 
+The number of genes per cell is computed via 
 
 ```{r}
-head(computeGenesPerCell(mms, min.reads = 1))
+head(computeGenesPerCell(mms))
 ```
 
-and similarly for transcripts. The user can send the output for plotting 
+and similarly for transcripts (UMIs) with the `computeTranscriptsPerCell` function.
+Their output can be send directly for plotting and visualization
 
 ```{r}
-plotViolin(computeTranscriptsPerCell(mms), attribute = "transcripts")
+plotViolin(computeTranscriptsPerCell(mms), 
+           attribute = "UMIs")
+plotHistogram(computeTranscriptsPerCell(mms), 
+              attribute = 'UMIs')
 ```
 
-The functions are polymorphic and can be used for `SingleSpeciesSample` objects.
-Splitting the samples is always performed by internal functions. If the user wants
-to restrict to one species, this is done by 
+The above functions are polymorphic and can be also used for `SingleSpeciesSample`
+objects. Splitting the samples is always performed by internal functions automatically. 
+If the user wants to restrict to only one species, this is done by the
+`splitMixedSpeciesSampleToSingleSpecies` function. which returns a list of the two
+`SingleSpeciesSample` objects.
 
 ```{r}
-h <- splitMixedSpeciesSampleToSingleSpecies(mms, threshold = 0.9)[[1]]
+# Extracting the human cells as a separate sample for further analysis
+h <- splitMixedSpeciesSampleToSingleSpecies(mms,
+                                            threshold = 0.9)[[1]]
 class(h)
 ```
 
-which returns a list of two `SingleSpeciesSample` objects. 
+# Single species
 
-### Single species
-
+## Filtering functions
 There are a couple of functions to remove low quality cells and genes, such as
 
 ```{r}
-h.f1 <- keepBestCells(h, num.cells = 100)
-h.f2 <- keepBestCells(h, min.num.trans = 1000)
-h.f3 <- removeLowQualityCells(h, min.genes = 2000)
-h.f4 <- removeLowQualityGenes(h, min.cells = 3)
+h.f1 <- keepBestCells(h, num.cells = 100) # keep only the top 100 cells
+h.f2 <- keepBestCells(h, min.num.trans = 1000) # keep cells with at least 1000 UMIs
+h.f3 <- removeLowQualityCells(h, min.genes = 2000) # remove cells which don't express at least 2000 genes
+h.f4 <- removeLowQualityGenes(h, min.cells = 3) # remove genes which are not expressed in at least 3 cells
 ```
 
-with obvious usage. Other very useful functions are to compare samples against each other,
-or against bulk data when available. For instance,
+with obvious usage. 
+
+## Comparing gene expression measurements
+Reproducibility and correlations of different samples are easily assessed
+via the `compareGeneExpressionLevels` function, for instance,
 
 ```{r}
-compareGeneExpressionLevels(h.f1, h.f2)
-compareSingleCellsAgainstBulk(h.f1, log(h.f2@dge[, 1, drop=F]+1))
+compareGeneExpressionLevels(h.f2, h.f1, 
+                            name1 = 'Drop-seq with >= 1000 UMIs per cell',
+                            name2 = 'Drop-seq only 100 cells',
+                            method = 'pearson')
 ```
 
+If bulk data is available then its correlation pwith the Drop-seq sample is
+directly assessed with the function `compareSingleCellsAgainstBulk`. Note that
+bulk has to be in a 1-column `data.frame` format with genes as the `rownames`
+and RPKM values (as default, raw counts are also accepted)
 
+```{r}
+compareSingleCellsAgainstBulk(h.f1, 
+                              log2(h.f2@dge[, 1, drop=F]+1))
+```
 
+## Further exploration
+It is instructive to assess the mitochondrial content of the single cell
+samples. This is done as below and the percentages can be sent for plotting
 
+```{r, warning = FALSE}
+head(computeMitochondrialPercentage(h), 5)
+plotMitochondrialContent(list(100-computeMitochondrialPercentage(h.f1),
+                              100-computeMitochondrialPercentage(h.f3)),
+                         log_scale = FALSE)
+```
 
+`Dropbead` offers also an implementation of the algorithm described in 
+Macosko et. al. 2015 for classification of the cell cycle phases. The following
+R-packages `xlsx`, `rJava` and `xlsxjars` are required for this
 
-
-
+```{r}
+phases <- assignCellCyclePhases(h)
+```

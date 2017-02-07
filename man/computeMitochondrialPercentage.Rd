@@ -2,7 +2,7 @@
 % Please edit documentation in R/SingleSpeciesSample.R
 \name{computeMitochondrialPercentage}
 \alias{computeMitochondrialPercentage}
-\title{Computes percentage of UMIs coming from mitochondrial encoded RNA.}
+\title{Computes mitochondrial percentage}
 \usage{
 computeMitochondrialPercentage(object, prefix = NULL)
 }
@@ -15,6 +15,8 @@ computeMitochondrialPercentage(object, prefix = NULL)
 The percentage of mitochondrial encoded RNA UMIs.
 }
 \description{
-Computes percentage of UMIs coming from mitochondrial encoded RNA.
+Computes the percentageof UMIs coming from mitochondrial encoded RNA. For human,
+mouse and melanogaster samples the mitochondrial prefix is hard-coded as \code{MT-},
+\code{mt-} and \code{mt:} respectively. An alternative prefix can be also provided.
 }
 

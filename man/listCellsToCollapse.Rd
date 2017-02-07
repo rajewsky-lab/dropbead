@@ -7,14 +7,15 @@
 listCellsToCollapse(object, ...)
 }
 \arguments{
-\item{A}{\code{SingleSpeciesSample} object.}
+\item{object}{A \code{SingleSpeciesSample} object.}
 }
 \value{
 A list of pairs od candidate cells marked for collapsing.
 }
 \description{
 Identify and list cells which share 11 bases in their barcodes and only the last
-one is different. The cells are marked as candidates if and only if they're classified
+one is different (usually being N, as a result of the DetectBeadSynthesisErrors
+tool). The cells are marked as candidates if and only if they're classified
 as belonging to the same species.
 }
 

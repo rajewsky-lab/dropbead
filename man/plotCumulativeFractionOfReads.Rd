@@ -4,12 +4,20 @@
 \alias{plotCumulativeFractionOfReads}
 \title{Plots the knee plot}
 \usage{
-plotCumulativeFractionOfReads(object, cutoff = 10000)
+plotCumulativeFractionOfReads(object, cutoff = 10000,
+  draw.infl.point = TRUE)
 }
 \arguments{
 \item{object}{A \code{data.frame} read from out_readcounts.txt.gz}
+
+\item{cutoff}{The number of cells to take into account (default is 10000).}
+
+\item{draw.infl.point}{Whether to annotate the inflation point or not.}
 }
 \description{
-Plots the knee plot
+Plots the cumulative fraction of reads against cell barcodes (in descending
+number of reads). This way provides a heuristic computation of the number of
+STAMPS in the sample (see computational cookbook from Macosko et. al. 2015
+for further details and reasoning).
 }
 

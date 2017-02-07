@@ -17,6 +17,7 @@ keepBestCells(object, num.cells, min.num.trans = NULL)
 The processed object.
 }
 \description{
-Keep best cells according to a criterion
+Subsets the sample by keeping the top n cells, or the cells with a minimum number
+of UMIs.
 }
 

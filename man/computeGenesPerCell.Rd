@@ -4,15 +4,17 @@
 \alias{computeGenesPerCell}
 \title{Compute genes per cell}
 \usage{
-computeGenesPerCell(object, min.reads = 2, ...)
+computeGenesPerCell(object, min.umis = 1, ...)
 }
 \arguments{
-\item{object}{A Single species sample.}
+\item{object}{A \code{SingleSpeciesSample}.}
+
+\item{min.umis}{The minimum number of UMIs to consider the gene as expressed (default is 1).}
 }
 \value{
 A \code{data.frame} with cells, gene counts and species.
 }
 \description{
-Compute genes per cell
+Computes the number of genes that a cell expresses.
 }
 

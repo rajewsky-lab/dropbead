@@ -2,7 +2,7 @@
 % Please edit documentation in R/DGEMatrix.R
 \name{compareSingleCellsAgainstBulk}
 \alias{compareSingleCellsAgainstBulk}
-\title{Compare average gene expression from single cell data against bulk data.}
+\title{Compare gene expression between single cell sample and bulk}
 \usage{
 compareSingleCellsAgainstBulk(single.cells, bulk.data, method = "pearson",
   ylab = "single cell sample", col = "steelblue", ...)
@@ -25,6 +25,6 @@ A scatterplot comparing the gene expression levels and with the correlation
 among the samples computed.
 }
 \description{
-Compare average gene expression from single cell data against bulk data.
+Compares the gene expression measurements from single cell data against bulk data.
 }
 

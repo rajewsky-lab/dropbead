@@ -9,12 +9,12 @@ removeCells(object, cells)
 \arguments{
 \item{object}{A \code{data.frame} representing the DGE.}
 
-\item{cells}{A character vector of cell barcodes to remove}
+\item{cells}{A character vector of cell barcodes to remove.}
 }
 \value{
 The processed \code{data.frame} is returned.
 }
 \description{
-Remove cells by barcode
+Removes the provided cells from the sample.
 }
 

@@ -6,7 +6,16 @@
 \usage{
 collapseCellsByBarcode(object, ...)
 }
+\arguments{
+\item{object}{A \code{SingleSpeciesSample} object.}
+}
+\value{
+A modified \code{SingleSpeciesSample} object.
+}
 \description{
-Collapse cells which have barcodes differing by one mutation on the last base.
+Collapse cells which share 11 bases in their barcodes and only the last
+one is different (usually being N, as a result of the DetectBeadSynthesisErrors
+tool). The cells are marked as candidates if and only if they're classified
+as belonging to the same species.
 }
 

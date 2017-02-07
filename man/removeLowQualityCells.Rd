@@ -15,6 +15,6 @@ removeLowQualityCells(object, min.genes = 1000, ...)
 A \code{data.frame} without the low quality cells.
 }
 \description{
-Remove cells expressing less than a minimum of genes (default value is 2000).
+Removes cells expressing less than a minimum of genes (default value is 1000).
 }
 
