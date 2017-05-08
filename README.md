@@ -10,7 +10,7 @@ Dropbead accompanies the following publication and was used to
 generate all figures appearing in the manuscript prior clustering.
 
 
-*Cell fixation and preservation for droplet-based single-cell transcriptomics*, 
+*Cell fixation and preservation for droplet-based single-cell transcriptomics*, <br />
 BMC Biology (in press), [bioRxiv](http://biorxiv.org/content/biorxiv/early/2017/04/13/099473.full.pdf), 99473 (2017)
 doi: https://doi.org/10.1101/099473 
 
