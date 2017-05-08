@@ -14,12 +14,12 @@ generate all figures appearing in the manuscript prior clustering.
 BMC Biology (in press), [bioRxiv](http://biorxiv.org/content/biorxiv/early/2017/04/13/099473.full.pdf), 99473 (2017)
 doi: https://doi.org/10.1101/099473 
 
-J. Alles<sup>#</sup>, N. Karaiskos^#^, S. Praktiknjo^#^, S. Grosswendt, Philipp Wahle, Pierre-Louis Ruffault,
-S. Ayoub, L. Schreyer, A. Boltengagen, Carmen Birchmeier, Robert Zinzen, C. Kocks^*^ and N. Rajewsky^*^
+J. Alles<sup>#</sup>, N. Karaiskos<sup>#</sup>, S. Praktiknjo<sup>#</sup>, S. Grosswendt, Philipp Wahle, Pierre-Louis Ruffault,
+S. Ayoub, L. Schreyer, A. Boltengagen, Carmen Birchmeier, Robert Zinzen, C. Kocks<sup>*</sup> and N. Rajewsky<sup>*</sup>
 
-^#^ Contributed equally
+<sup>#</sup> Contributed equally
 
-^*^ Corresponding authors
+<sup>*</sup> Corresponding authors
 
 [Contact the author](mailto:nikolaos.karaiskos@mdc-berlin.de) in case you've found a bug. 
 Feel free to cite the package in case you've used it.
