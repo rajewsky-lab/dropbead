@@ -9,18 +9,19 @@ sequencing. It has been particularly tailored for Drop-seq.
 Dropbead accompanies the following publication and was used to
 generate all figures appearing in the manuscript prior clustering.
 
-```
-bioRxiv, 99473 (2017)
+
+*Cell fixation and preservation for droplet-based single-cell transcriptomics*, 
+BMC Biology (in press), [bioRxiv](http://biorxiv.org/content/biorxiv/early/2017/04/13/099473.full.pdf), 99473 (2017)
 doi: https://doi.org/10.1101/099473 
 
-Cell fixation and preservation for droplet-based single-cell transcriptomics
+J. Alles<sup>#</sup>, N. Karaiskos<sup>#</sup>, S. Praktiknjo<sup>#</sup>, S. Grosswendt, Philipp Wahle, Pierre-Louis Ruffault,
+S. Ayoub, L. Schreyer, A. Boltengagen, Carmen Birchmeier, Robert Zinzen, C. Kocks<sup>&</sup> and N. Rajewsky<sup>&</sup>
 
-J. Alles, N. Karaiskos, S. Praktiknjo, S. Grosswendt, Philipp Wahle, Pierre-Louis Ruffault, 
-S. Ayoub, L. Schreyer, A. Boltengagen, Carmen Birchmeier, Robert Zinzen, C. Kocks and N. Rajewsky
-```
+<sup>#</sup> Contributed equally <br />
+<sup>&</sup> Corresponding authors: [C. Kocks](mailto:christine.kocks@mdc-berlin.de), [N. Rajewsky](mailto:rajewsky@mdc-berlin.de)
 
-Contact the author in case you've found a bug. Feel free to cite the package
-in case you've used it.
+[Contact the author](mailto:nikolaos.karaiskos@mdc-berlin.de) in case you've found a bug. 
+Feel free to cite the package in case you've used it.
 
 ## Installation
 The easiest way to install `dropbead` is through `devtools`
