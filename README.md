@@ -15,7 +15,7 @@ doi: https://doi.org/10.1101/099473
 
 Cell fixation and preservation for droplet-based single-cell transcriptomics
 
-J. Alles{#}, N. Karaiskos^#^, S. Praktiknjo^#^, S. Grosswendt, Philipp Wahle, Pierre-Louis Ruffault,
+expression(J. Alles^{#}), N. Karaiskos^#^, S. Praktiknjo^#^, S. Grosswendt, Philipp Wahle, Pierre-Louis Ruffault,
 S. Ayoub, L. Schreyer, A. Boltengagen, Carmen Birchmeier, Robert Zinzen, C. Kocks^*^ and N. Rajewsky^*^
 
 ^#^ Contributed equally
