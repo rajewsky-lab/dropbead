@@ -7,7 +7,7 @@ basic analysis of single cell sequencing data coming from droplet
 sequencing. It has been particularly tailored for Drop-seq.
 
 Dropbead accompanies the following publication and was used to
-generate all figures appearing in the manuscript. 
+generate all figures appearing in the manuscript prior clustering.
 
 ```
 bioRxiv, 99473 (2017)
@@ -15,11 +15,9 @@ doi: https://doi.org/10.1101/099473
 
 Cell fixation and preservation for droplet-based single-cell transcriptomics
 
-J. Alles, S. Praktiknjo, N. Karaiskos, S. Grosswendt, S. Ayoub, L. Schreyer, 
-A. Boltengagen, C. Kocks and N. Rajewsky
+J. Alles, N. Karaiskos, S. Praktiknjo, S. Grosswendt, Philipp Wahle, Pierre-Louis Ruffault, 
+S. Ayoub, L. Schreyer, A. Boltengagen, Carmen Birchmeier, Robert Zinzen, C. Kocks and N. Rajewsky
 ```
-The script `manuscript_reproduction.R` contains the necessary steps and
-commands to reproduce the aforementioned figures.
 
 Contact the author in case you've found a bug. Feel free to cite the package
 in case you've used it.
