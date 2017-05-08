@@ -15,11 +15,11 @@ BMC Biology (in press), [bioRxiv](http://biorxiv.org/content/biorxiv/early/2017/
 doi: https://doi.org/10.1101/099473 
 
 J. Alles<sup>#</sup>, N. Karaiskos<sup>#</sup>, S. Praktiknjo<sup>#</sup>, S. Grosswendt, Philipp Wahle, Pierre-Louis Ruffault,
-S. Ayoub, L. Schreyer, A. Boltengagen, Carmen Birchmeier, Robert Zinzen, C. Kocks<sup>*</sup> and N. Rajewsky<sup>*</sup>
+S. Ayoub, L. Schreyer, A. Boltengagen, Carmen Birchmeier, Robert Zinzen, C. Kocks<sup>&</sup> and N. Rajewsky<sup>&</sup>
 
 <sup>#</sup> Contributed equally
 
-<sup>*</sup> Corresponding authors
+<sup>&</sup> Corresponding authors: [C. Kocks](mailto:christine.kocks@mdc-berlin.de), [N. Rajewsky](mailto:rajewsky@mdc-berlin.de)
 
 [Contact the author](mailto:nikolaos.karaiskos@mdc-berlin.de) in case you've found a bug. 
 Feel free to cite the package in case you've used it.
