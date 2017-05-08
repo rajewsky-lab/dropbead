@@ -15,12 +15,15 @@ doi: https://doi.org/10.1101/099473
 
 Cell fixation and preservation for droplet-based single-cell transcriptomics
 
-J. Alles, N. Karaiskos, S. Praktiknjo, S. Grosswendt, Philipp Wahle, Pierre-Louis Ruffault, 
-S. Ayoub, L. Schreyer, A. Boltengagen, Carmen Birchmeier, Robert Zinzen, C. Kocks and N. Rajewsky
+J. Alles^#^, N. Karaiskos^#^, S. Praktiknjo^#^, S. Grosswendt, Philipp Wahle, Pierre-Louis Ruffault,
+S. Ayoub, L. Schreyer, A. Boltengagen, Carmen Birchmeier, Robert Zinzen, C. Kocks^*^ and N. Rajewsky^*^
+
+^#^ Contributed equally
+^*^ Corresponding authors
 ```
 
-Contact the author in case you've found a bug. Feel free to cite the package
-in case you've used it.
+[Contact the author](nikolaos.karaiskos@mdc-berlin.de) in case you've found a bug. 
+Feel free to cite the package in case you've used it.
 
 ## Installation
 The easiest way to install `dropbead` is through `devtools`
