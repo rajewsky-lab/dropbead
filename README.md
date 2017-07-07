@@ -11,7 +11,8 @@ generate all figures appearing in the manuscript prior clustering.
 
 
 *Cell fixation and preservation for droplet-based single-cell transcriptomics*, <br />
-BMC Biology (in press), [bioRxiv](http://biorxiv.org/content/biorxiv/early/2017/04/13/099473.full.pdf), 99473 (2017)
+[BMC Biology 2017 15:44](https://bmcbiol.biomedcentral.com/articles/10.1186/s12915-017-0383-5),
+[bioRxiv](http://biorxiv.org/content/biorxiv/early/2017/04/13/099473.full.pdf), 99473 (2017)
 doi: https://doi.org/10.1101/099473 
 
 J. Alles<sup>#</sup>, N. Karaiskos<sup>#</sup>, S. Praktiknjo<sup>#</sup>, S. Grosswendt, Philipp Wahle, Pierre-Louis Ruffault,
