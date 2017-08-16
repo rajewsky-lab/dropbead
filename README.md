@@ -15,8 +15,8 @@ generate all figures appearing in the manuscript prior clustering.
 [bioRxiv](http://biorxiv.org/content/biorxiv/early/2017/04/13/099473.full.pdf), 99473 (2017)
 doi: https://doi.org/10.1101/099473 
 
-J. Alles<sup>#</sup>, N. Karaiskos<sup>#</sup>, S. Praktiknjo<sup>#</sup>, S. Grosswendt, Philipp Wahle, Pierre-Louis Ruffault,
-S. Ayoub, L. Schreyer, A. Boltengagen, Carmen Birchmeier, Robert Zinzen, C. Kocks<sup>&</sup> and N. Rajewsky<sup>&</sup>
+J. Alles<sup>#</sup>, N. Karaiskos<sup>#</sup>, S. Praktiknjo<sup>#</sup>, S. Grosswendt, P. Wahle, P.-L. Ruffault,
+S. Ayoub, L. Schreyer, A. Boltengagen, C. Birchmeier, R. Zinzen, C. Kocks<sup>&</sup> and N. Rajewsky<sup>&</sup>
 
 <sup>#</sup> Contributed equally <br />
 <sup>&</sup> Corresponding authors: [C. Kocks](mailto:christine.kocks@mdc-berlin.de), [N. Rajewsky](mailto:rajewsky@mdc-berlin.de)
