@@ -18,4 +18,3 @@ one is different (usually being N, as a result of the DetectBeadSynthesisErrors
 tool). The cells are marked as candidates if and only if they're classified
 as belonging to the same species.
 }
-

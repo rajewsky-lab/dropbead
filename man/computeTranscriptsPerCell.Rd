@@ -15,4 +15,3 @@ A \code{data.frame} with cells, transcript counts and species.
 \description{
 Computes the number of transcripts (UMIs) that a cell contains.
 }
-

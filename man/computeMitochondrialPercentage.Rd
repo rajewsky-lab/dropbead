@@ -19,4 +19,3 @@ Computes the percentageof UMIs coming from mitochondrial encoded RNA. For human,
 mouse and melanogaster samples the mitochondrial prefix is hard-coded as \code{MT-},
 \code{mt-} and \code{mt:} respectively. An alternative prefix can be also provided.
 }
-

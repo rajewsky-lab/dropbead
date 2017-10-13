@@ -15,4 +15,3 @@ and \code{computeTranscriptsPerCell}.}
 \description{
 Histogram plot of an attribute
 }
-

@@ -25,4 +25,3 @@ A plot comparing the gene expression levels.
 Computes the averaged sums of the gene expression levels between two
 samples, as well as their correlation.
 }
-

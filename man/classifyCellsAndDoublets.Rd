@@ -25,4 +25,3 @@ The differentiation of species is performed internally and according to
 the \code{species1} and \code{species2} labels of the sample. If the
 classificiation is not confident enough, the cell is characterized as doublet.
 }
-

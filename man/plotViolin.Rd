@@ -15,4 +15,3 @@ and \code{computeTranscriptsPerCell}.}
 \description{
 Violin plot of an attribute
 }
-

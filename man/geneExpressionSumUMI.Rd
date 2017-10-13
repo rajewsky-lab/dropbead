@@ -16,4 +16,3 @@ A pseudocount is added to avoid infinities.
 \description{
 Compute the sum of transcript counts of each gene across all cells.
 }
-

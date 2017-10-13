@@ -20,4 +20,3 @@ number of reads). This way provides a heuristic computation of the number of
 STAMPS in the sample (see computational cookbook from Macosko et. al. 2015
 for further details and reasoning).
 }
-

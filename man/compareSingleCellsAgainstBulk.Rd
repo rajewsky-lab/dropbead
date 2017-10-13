@@ -27,4 +27,3 @@ among the samples computed.
 \description{
 Compares the gene expression measurements from single cell data against bulk data.
 }
-

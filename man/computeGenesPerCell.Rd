@@ -17,4 +17,3 @@ A \code{data.frame} with cells, gene counts and species.
 \description{
 Computes the number of genes that a cell expresses.
 }
-

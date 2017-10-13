@@ -24,4 +24,3 @@ A list of length 2. First item is the correlation and second is the
 Computes correlation of gene expression measurements between a single cell
 sample and bulk data.
 }
-

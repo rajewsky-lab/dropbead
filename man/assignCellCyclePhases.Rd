@@ -20,4 +20,3 @@ A \code{data.frame} with cell cycle phase scores for every cell.
 Assigns the cells into the 5 cell cycle phases, following the algorithm described
 in Macosko et al. 2015. The table of genes is also taken from Macosko et al. 2015.
 }
-

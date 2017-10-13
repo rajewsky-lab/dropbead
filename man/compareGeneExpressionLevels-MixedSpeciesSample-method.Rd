@@ -23,4 +23,3 @@ A plot comparing the gene expression levels by species.
 \description{
 Compare gene expression levels between two mixed species samples
 }
-
