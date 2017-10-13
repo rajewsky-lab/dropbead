@@ -15,4 +15,3 @@ Identify and list cells which share 11 bases in their barcodes and only the last
 one is different. The cells are marked as candidates if and only if they're classified
 as belonging to the same species.
 }
-

@@ -2,7 +2,7 @@
 % Please edit documentation in R/Tools.R
 \name{mergeMultipleDGEs}
 \alias{mergeMultipleDGEs}
-\title{Merges multiple samples into a big DGE matrix}
+\title{Merge multiple samples into a big DGE matrix}
 \usage{
 mergeMultipleDGEs(object)
 }
@@ -13,7 +13,6 @@ mergeMultipleDGEs(object)
 A \code{data.frame} containing all DGEs merged.
 }
 \description{
-Merges the DGEs of multiple samples into a big one that can be used for
+Merge the DGEs of multiple samples into a big one that can be used for
 further analysis.
 }
-

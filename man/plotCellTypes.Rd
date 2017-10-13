@@ -14,4 +14,3 @@ function.}
 Scatter plot of all cells by transcripts of species (a.k.a. barnyard plot). Species
 and doublets are separated by different colors.
 }
-

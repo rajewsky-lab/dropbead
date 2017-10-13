@@ -15,4 +15,3 @@ A vector of variance/mean expression values for each gene. Computation in log sp
 \description{
 Compute the dispersion of each gene across all cells.
 }
-

@@ -18,4 +18,3 @@ A \code{data.frame} without the low quality genes.
 Removes genes which are expressed in less than a minimum number of cells
 (default is 3).
 }
-

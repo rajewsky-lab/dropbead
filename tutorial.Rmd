@@ -1,16 +1,9 @@
 ---
 title: "Dropbead tutorial"
 author: "Nikos Karaiskos"
-date: "07 Feb 2017"
+date: "13 Oct 2017"
 output: html_document
 ---
-
-## Knee plot and the number of cells
-Dropbead provides a function to computationally estimate the number of cells
-present in the sample, by calculating the inflection point of the cumulative
-fraction of reads against the cell barcodes. Assuming that `reads.by.cell` 
-is the `data.frame` with the reads per cell (the output of `BAMTagHistogram`
-from the Drop-seq toolkit), 
 
 ```{r, echo=FALSE, include=FALSE}
 library(dropbead)
@@ -18,9 +11,33 @@ library(data.table)
 library(xlsx)
 library(rJava)
 library(xlsxjars)
+library(Rsamtools)
 reads.by.cell <- data.frame(fread('zcat < /mydaten/projects/hek3t3/data/ds_013_50fix/out_readcounts.txt.gz'))
 dge.matrix=data.frame(fread("zcat < /mydaten/projects/hek3t3/data/ds_013_50fix/dge.txt.gz"), row.names = 1)
 ```
+
+# Assess basic read and downstream statistics
+## Extract read statistics
+`Dropbead` provides two functions to readily extract useful statistics from the
+data. The first one, `extractReadStatistics`, takes the BAM file as an argument
+and computes the total number of (uniquely mapped) reads, the percentages
+of intronic/intergenic etc. The output is a `data.frame` as follows:
+
+```{r, echo=FALSE}
+extractReadStatistics('/mydaten/projects/drosophila_brain/data/ds_032_WT_rep1/star_gene_exon_tagged_corrected.bam', yieldSize=10^6, sample.name='Drop-seq')
+```
+
+The read numbers are in million. The intronic, intergenic, coding and UTR reads
+do not get a gene annotation tag (`GE:`) and are discarded from the Drop-seq
+pipeline. The last column counts the total number of barcodes seen in the data,
+most of them being artifacts from sequencing errors. 
+
+## Knee plot and the number of cells
+`Dropbead` provides a function to computationally estimate the number of cells
+present in the sample, by calculating the inflection point of the cumulative
+fraction of reads against the cell barcodes. Assuming that `reads.by.cell` 
+is the `data.frame` with the reads per cell (the output of `BAMTagHistogram`
+from the Drop-seq toolkit), 
 
 ```{r}
 plotCumulativeFractionOfReads(reads.by.cell, 
@@ -28,6 +45,19 @@ plotCumulativeFractionOfReads(reads.by.cell,
                               draw.infl.point = TRUE)
 ```
 
+## Extract downstream statistics
+The following function creates a table with the basic downstream statistics,
+such as the cell number and the median number of reads, genes and UMIs per cell.
+
+```{r}
+extractDownstreamStatistics('~/dropseq-data/', min.umi=250, read.stats=NULL)
+```
+
+The total number of UMIs in the DGE is given in millions.
+The PCR column provides the reads to UMIs ratio, so that the smaller, the better.
+Passing the `data.frame` output of the `extractReadStatistics` function into
+the `read.stats` argument provides a more precise calculation of the PCR
+over-amplification bias.
 
 # Mixed species experiments
 Dropbead offers two main classes to store samples, the `SingleSpeciesSample` 

@@ -18,4 +18,3 @@ A list \code{data.frames} representing the DGEs for each species.
 \description{
 Split DGE by genes and cells of species
 }
-

@@ -18,4 +18,3 @@ A list of two \code{SingleSpeciesSample} objects.
 \description{
 Separate the mixed species sample into two single species samples
 }
-

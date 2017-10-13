@@ -17,4 +17,3 @@ A \code{data.frame} without the low quality cells.
 \description{
 Removes cells expressing less than a minimum of genes (default value is 1000).
 }
-

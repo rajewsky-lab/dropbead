@@ -20,4 +20,3 @@ The processed object.
 Subsets the sample by keeping the top n cells, or the cells with a minimum number
 of UMIs.
 }
-

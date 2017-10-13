@@ -17,4 +17,3 @@ The processed \code{data.frame} is returned.
 \description{
 Removes the provided cells from the sample.
 }
-

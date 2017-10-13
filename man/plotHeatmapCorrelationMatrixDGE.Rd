@@ -12,4 +12,3 @@ plotHeatmapCorrelationMatrixDGE(object)
 \description{
 Heatmap of the correlation matrix for pairs of cells.
 }
-

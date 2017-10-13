@@ -15,4 +15,3 @@ A vector of mean expression values for each gene. Computation in log space.
 \description{
 Compute the average expression of each gene across all cells.
 }
-

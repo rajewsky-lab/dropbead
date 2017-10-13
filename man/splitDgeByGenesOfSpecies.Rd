@@ -21,4 +21,3 @@ Splits the DGE of a \code{MixedSpeciesSample} into two \code{SingleSpeciesSample
 The splitting is done by the prefixes of the gene names. If no prefixes are provided
 the defaults are \code{hg_} for human and \code{mm_} for mouse respectively.
 }
-

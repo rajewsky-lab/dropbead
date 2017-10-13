@@ -2,7 +2,7 @@
 % Please edit documentation in R/Tools.R
 \name{findInflectionPoint}
 \alias{findInflectionPoint}
-\title{Computes the inflection point / cell number.}
+\title{Compute the inflection point / cell number.}
 \usage{
 findInflectionPoint(object, max.cells = 10000, n = 1)
 }
@@ -19,8 +19,7 @@ compute the inflection point (default is 10000).}
 The cell number.
 }
 \description{
-Computes an inflection point (a.k.a. knee point, elbow of curve) of curve.
+Compute an inflection point (a.k.a. knee point, elbow of curve) of curve.
 Can be used to compute the number of STAMPS that are present in the data
 (see Drop-seq computational cookbook for further details).
 }
-

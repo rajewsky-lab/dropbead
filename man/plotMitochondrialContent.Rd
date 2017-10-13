@@ -18,4 +18,3 @@ plotMitochondrialContent(object, log_scale = TRUE,
 \description{
 Violin plots of mitochondrial content of one or more samples.
 }
-
