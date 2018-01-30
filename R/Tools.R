@@ -26,6 +26,28 @@ setMethod("mergeMultipleDGEs",
             return (merged.df)
           })
 
+#' Estimate the cell number
+#'
+#' Estimate the number of STAMPS that are present in the data (see Drop-seq
+#' computational cookbook for further details).
+#'
+#' @param object A vector containing the reads per cell as given by the Drop-seq
+#' pipeline (BAMTagHistogram).
+#' @param max.cells The number of cells to consider as an upper bound and to
+#' compute the inflection point (default is 15000).
+setGeneric("estimateCellNumber",
+           function(object, max.cells=15000) {
+           standardGeneric("estimateCellNumber")
+           })
+setMethod("estimateCellNumber",
+          function(objetc, max.cells) {
+             xdata <- (1:max.cells)/max.cells
+             cs <- cumsum(df$V1[1:max.cells]/sum(df$V1[1:max.cells]))
+             m <- (cs[max.cells] - cs[1]) / (max.cells - xdata[1])
+             dists <- sapply(1:max.cells, function(cell) sin(atan(m)) * abs(cs[cell]-xdata[cell]))
+             return (which.max(dists))
+           })
+
 #' Compute the inflection point / cell number.
 #'
 #' Compute an inflection point (a.k.a. knee point, elbow of curve) of curve.
