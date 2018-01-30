@@ -26,46 +26,28 @@ setMethod("mergeMultipleDGEs",
             return (merged.df)
           })
 
-#' Compute the inflection point / cell number.
+#' Estimate the cell number
 #'
-#' Compute an inflection point (a.k.a. knee point, elbow of curve) of curve.
-#' Can be used to compute the number of STAMPS that are present in the data
-#' (see Drop-seq computational cookbook for further details).
+#' Estimate the number of STAMPS that are present in the data (see Drop-seq
+#' computational cookbook for further details).
 #'
 #' @param object A vector containing the reads per cell as given by the Drop-seq
 #' pipeline (BAMTagHistogram).
 #' @param max.cells The number of cells to consider as an upper bound and to
-#' compute the inflection point (default is 10000).
-#' @param n The nubmer of inflection points to return (default is 1).
-#' @return The cell number.
-setGeneric("findInflectionPoint",
-           function(object, max.cells=10000, n=1) {
-             standardGeneric("findInflectionPoint")
-             })
-setMethod("findInflectionPoint",
+#' compute the inflection point (default is 15000).
+setGeneric("estimateCellNumber",
+           function(object, max.cells=15000) {
+           standardGeneric("estimateCellNumber")
+           })
+setMethod("estimateCellNumber",
           "numeric",
-          function(object, max.cells, n) {
-            dvec = c()
-
-            # Normalize the vector
-            object = cumsum(object[1:max.cells])
-            object = object/max(object)
-            L = length(object)
-
-            # The distance of the endpoints
-            dmax = dist(rbind(c(1/L, object[1]), c(1, object[L])), method="euclidean")
-
-            # Find the point with maximum distance (minimum angle)
-            for (i in 1:L) {
-              d1 = dist(rbind(c(1/L, object[1]), c(i/L, object[i])), method="euclidean")
-              d2 = dist(rbind(c(i/L, object[i]), c(1, object[L])), method="euclidean")
-
-              if (d1 == 0 | d2 == 0) {next}   # Avoid singularities
-
-              dvec = c(dvec, abs((d1^2 + d2^2 - dmax^2)/(2*d1*d2)))
-            }
-            return (order(dvec)[1:n])
-          })
+          function(object, max.cells) {
+             xdata <- (1:max.cells)/max.cells
+             cs <- cumsum(df$V1[1:max.cells]/sum(df$V1[1:max.cells]))
+             m <- (cs[max.cells] - cs[1]) / (max.cells - xdata[1])
+             dists <- sapply(1:max.cells, function(cell) sin(atan(m)) * abs(cs[cell]-xdata[cell]))
+             return (which.max(dists))
+           })
 
 #' Extract statistics from mapped reads.
 #'
