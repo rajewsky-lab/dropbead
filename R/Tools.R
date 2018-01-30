@@ -40,6 +40,7 @@ setGeneric("estimateCellNumber",
            standardGeneric("estimateCellNumber")
            })
 setMethod("estimateCellNumber",
+          "numeric",
           function(object, max.cells) {
              xdata <- (1:max.cells)/max.cells
              cs <- cumsum(df$V1[1:max.cells]/sum(df$V1[1:max.cells]))
