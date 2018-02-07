@@ -43,7 +43,7 @@ setMethod("estimateCellNumber",
           "numeric",
           function(object, max.cells) {
              xdata <- (1:max.cells)/max.cells
-             cs <- cumsum(df$V1[1:max.cells]/sum(df$V1[1:max.cells]))
+             cs <- cumsum(object[1:max.cells]/sum(object[1:max.cells]))
              m <- (cs[max.cells] - cs[1]) / (max.cells - xdata[1])
              dists <- sapply(1:max.cells, function(cell) sin(atan(m)) * abs(cs[cell]-xdata[cell]))
              return (which.max(dists))
