@@ -68,17 +68,17 @@ setMethod(f = "plotHistogram",
 #'
 #' @param object A \code{data.frame} read from out_readcounts.txt.gz
 #' @param cutoff The number of cells to take into account (default is 10000).
-#' @param draw.infl.point Whether to annotate the inflation point or not.
+#' @param draw.knee.point Whether to annotate the knee point or not.
 setGeneric("plotCumulativeFractionOfReads",
-           function(object, cutoff=10000, draw.infl.point=TRUE) {
+           function(object, cutoff=10000, draw.knee.point=TRUE) {
              standardGeneric("plotCumulativeFractionOfReads")})
 setMethod("plotCumulativeFractionOfReads",
           "data.frame",
-          function(object, cutoff, draw.infl.point) {
+          function(object, cutoff, draw.knee.point) {
             df <- data.frame("cum"=cumsum(object[1:cutoff, 1])/max(cumsum(object[1:cutoff, 1])),
                              "cells"=1:cutoff)
 
-            infl.point <- findInflectionPoint(object[1:cutoff, 1], max.cells=cutoff, n=1)
+            knee.point <- estimateCellNumber(object[1:cutoff, 1], max.cells=cutoff)
 
             g <- (ggplot(df, aes(cells, cum)) + geom_line(col="steelblue", size=1.25) + theme_minimal()
             + scale_x_continuous(expand=c(0.015, 0))
@@ -88,9 +88,9 @@ setMethod("plotCumulativeFractionOfReads",
                     plot.margin = unit(c(1, 1 , 0.5, 0.5), "cm"),
                     panel.border = element_rect(colour = "black", fill=NA, size=1),
                     panel.grid.major = element_blank()))
-            if (draw.infl.point) {
-              g <- (g + geom_vline(xintercept = infl.point, col='red', size=1)
-                    + ggtitle(paste0('Number of STAMPS: ', infl.point))
+            if (draw.knee.point) {
+              g <- (g + geom_vline(xintercept = knee.point, col='red', size=1)
+                    + ggtitle(paste0('Number of STAMPS: ', knee.point))
                     + theme(title = element_text(size=16)))
             }
             return (g)
